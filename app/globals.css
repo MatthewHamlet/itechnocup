@@ -1,26 +1,209 @@
 @import "tailwindcss";
 
+@theme {
+  --color-farad-primary: #477a68;
+  --color-farad-forest: #285548;
+  --color-farad-sage: #dcebe5;
+
+  --color-farad-ivory: #faf9f5;
+  --color-farad-border: #e3e8e5;
+
+  --color-farad-ink: #1e2925;
+  --color-farad-muted: #66736d;
+
+  --color-farad-peach: #e8a27c;
+  --color-farad-peachsoft: #f8e5da;
+
+  --color-farad-terracotta: #b0603a;
+  --color-farad-amber: #9c6b23;
+  --color-farad-ambersoft: #fbeeda;
+  --color-farad-clay: #ae5b50;
+  --color-farad-claysoft: #f7e2dd;
+  --color-farad-sand: #8a6b3d;
+  --color-farad-sandsoft: #f2eadb;
+
+  --color-farad-volt: #f6c445;
+
+  --color-farad-over: #b5442f;
+  --color-farad-oversoft: #fbe4de;
+
+  --color-app-canvas: #efedea;
+  --color-app-line: #e5e1db;
+  --color-app-line-soft: #eeeae4;
+  --color-app-ink: #1c2622;
+  --color-app-muted: #6f7a74;
+  --color-app-dim: #9aa39e;
+
+  --color-chip-1: #e6eef7;
+  --color-chip-1i: #47617c;
+  --color-chip-2: #cfe0ef;
+  --color-chip-2i: #35536e;
+  --color-chip-3: #aecadf;
+  --color-chip-3i: #23404f;
+  --color-chip-4: #5f83a1;
+  --color-chip-5: #2f4a61;
+
+  --color-home-wall: #efe0cd;
+  --color-home-floor: #d9c3a5;
+  --color-home-wood: #b98f62;
+
+  --font-sans: var(--font-jakarta);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --farad-bottom-nav: 0px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@media (max-width: 767px) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --farad-bottom-nav: calc(4.625rem + env(safe-area-inset-bottom));
   }
 }
 
+:root {
+  --background: var(--color-farad-ivory);
+  --foreground: var(--color-farad-ink);
+
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+html,
 body {
+  overflow-x: clip;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+html,
+body {
+  overflow-y: auto;
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+  max-width: 100%;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+}
+
+.farad-blob {
+  border-radius: 62% 38% 46% 54% / 54% 46% 54% 46%;
+}
+
+.farad-blob-alt {
+  border-radius: 42% 58% 63% 37% / 47% 58% 42% 53%;
+}
+
+.farad-press {
+  transition:
+    transform 160ms var(--ease-out-strong),
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.farad-press:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .farad-lift {
+    transition:
+      transform 220ms var(--ease-out-strong),
+      border-color 220ms ease,
+      box-shadow 220ms var(--ease-out-strong);
+  }
+
+  .farad-lift:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.farad-reveal {
+  transition:
+    opacity 500ms var(--ease-out-strong),
+    transform 500ms var(--ease-out-strong);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.farad-drift {
+  transition:
+    opacity 700ms var(--ease-out-strong),
+    transform 700ms var(--ease-out-strong);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+@media (scripting: enabled) {
+  .farad-reveal {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  .farad-reveal[data-visible="true"] {
+    opacity: 1;
+    transform: none;
+  }
+
+  .farad-drift {
+    opacity: 0;
+    transform: translateY(var(--drift-from, -30px));
+  }
+
+  [data-visible="true"] .farad-drift {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .farad-glass {
+    background-color: #ffffff !important;
+    backdrop-filter: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .farad-lift,
+  .farad-glass {
+    border-color: var(--color-farad-forest) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .farad-reveal,
+  .farad-drift {
+    transform: none !important;
+  }
+
+  .farad-press:active {
+    transform: none;
+  }
+
+  .farad-lift:hover {
+    transform: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: var(--color-farad-peach);
+  color: var(--color-farad-ink);
 }
