@@ -7,7 +7,7 @@ import {
   ScheduleValidationError,
   type ApplianceTask,
   type HouseholdCapacity,
-} from "../../lib/dayajaga";
+} from "../../lib/farad";
 
 const household1300: HouseholdCapacity = {
   installedVA: 1300,
@@ -15,7 +15,9 @@ const household1300: HouseholdCapacity = {
   reserveFraction: 0.1,
 };
 
-function task(overrides: Partial<ApplianceTask> & Pick<ApplianceTask, "id" | "estimatedVA">): ApplianceTask {
+function task(
+  overrides: Partial<ApplianceTask> & Pick<ApplianceTask, "id" | "estimatedVA">,
+): ApplianceTask {
   return {
     name: overrides.id,
     durationMinutes: 60,
@@ -27,14 +29,19 @@ function task(overrides: Partial<ApplianceTask> & Pick<ApplianceTask, "id" | "es
   };
 }
 
-function scheduledStart(result: ReturnType<typeof scheduleTasks>, taskId: string): string {
+function scheduledStart(
+  result: ReturnType<typeof scheduleTasks>,
+  taskId: string,
+): string {
   assert.equal(result.status, "feasible");
-  const scheduled = result.scheduledTasks.find((candidate) => candidate.taskId === taskId);
+  const scheduled = result.scheduledTasks.find(
+    (candidate) => candidate.taskId === taskId,
+  );
   assert.ok(scheduled, `Expected scheduled task ${taskId}`);
   return scheduled.scheduledStart;
 }
 
-describe("DayaJaga deterministic scheduler", () => {
+describe("farad deterministic scheduler", () => {
   it("derives the planning limit from installed VA and reserve", () => {
     assert.equal(calculatePlanningLimitVA(household1300), 1170);
   });
@@ -50,7 +57,12 @@ describe("DayaJaga deterministic scheduler", () => {
         latestFinish: "19:00",
         flexibility: "fixed",
       }),
-      task({ id: "water-pump", name: "Pompa air", estimatedVA: 500, durationMinutes: 30 }),
+      task({
+        id: "water-pump",
+        name: "Pompa air",
+        estimatedVA: 500,
+        durationMinutes: 30,
+      }),
       task({ id: "iron", name: "Setrika seragam", estimatedVA: 350 }),
       task({ id: "washer", name: "Nyuci", estimatedVA: 450 }),
     ];
@@ -62,7 +74,11 @@ describe("DayaJaga deterministic scheduler", () => {
     assert.ok(result.originalConflicts.length > 0);
     assert.equal(result.beforePeakVA, 1800);
     assert.equal(result.optimizedConflicts.length, 0);
-    assert.ok(result.optimizedLoadProfile.every((point) => point.totalVA <= result.planningLimitVA));
+    assert.ok(
+      result.optimizedLoadProfile.every(
+        (point) => point.totalVA <= result.planningLimitVA,
+      ),
+    );
     assert.equal(scheduledStart(result, "rice-cooker"), "18:00");
     assert.equal(scheduledStart(result, "water-pump"), "17:30");
     assert.equal(scheduledStart(result, "iron"), "18:00");
@@ -86,7 +102,11 @@ describe("DayaJaga deterministic scheduler", () => {
       })),
       [
         { taskId: "iron", movedByMinutes: 0, reasonCode: "KEPT_AT_PREFERRED" },
-        { taskId: "washer", movedByMinutes: 0, reasonCode: "KEPT_AT_PREFERRED" },
+        {
+          taskId: "washer",
+          movedByMinutes: 0,
+          reasonCode: "KEPT_AT_PREFERRED",
+        },
       ],
     );
   });
@@ -114,7 +134,11 @@ describe("DayaJaga deterministic scheduler", () => {
 
     assert.equal(result.status, "infeasible");
     assert.deepEqual(result.scheduledTasks, []);
-    assert.ok(result.infeasibleReasons.some((reason) => reason.code === "NO_VALID_SCHEDULE"));
+    assert.ok(
+      result.infeasibleReasons.some(
+        (reason) => reason.code === "NO_VALID_SCHEDULE",
+      ),
+    );
   });
 
   it("identifies colliding fixed tasks", () => {
@@ -141,7 +165,9 @@ describe("DayaJaga deterministic scheduler", () => {
     ]);
 
     assert.equal(result.status, "infeasible");
-    const reason = result.infeasibleReasons.find((candidate) => candidate.code === "FIXED_TASK_OVERLOAD");
+    const reason = result.infeasibleReasons.find(
+      (candidate) => candidate.code === "FIXED_TASK_OVERLOAD",
+    );
     assert.deepEqual(reason?.relatedTaskIds, ["fixed-a", "fixed-b"]);
   });
 
@@ -159,7 +185,9 @@ describe("DayaJaga deterministic scheduler", () => {
     assert.equal(result.status, "infeasible");
     assert.ok(
       result.infeasibleReasons.some(
-        (reason) => reason.code === "WINDOW_TOO_NARROW" && reason.taskId === "short-window",
+        (reason) =>
+          reason.code === "WINDOW_TOO_NARROW" &&
+          reason.taskId === "short-window",
       ),
     );
   });
@@ -177,8 +205,18 @@ describe("DayaJaga deterministic scheduler", () => {
   });
 
   it("is deterministic even when input order changes", () => {
-    const first = task({ id: "a", estimatedVA: 550, earliestStart: "17:00", latestFinish: "19:00" });
-    const second = task({ id: "b", estimatedVA: 550, earliestStart: "17:00", latestFinish: "19:00" });
+    const first = task({
+      id: "a",
+      estimatedVA: 550,
+      earliestStart: "17:00",
+      latestFinish: "19:00",
+    });
+    const second = task({
+      id: "b",
+      estimatedVA: 550,
+      earliestStart: "17:00",
+      latestFinish: "19:00",
+    });
     const forward = scheduleTasks(household1300, [first, second]);
     const reverse = scheduleTasks(household1300, [second, first]);
 
@@ -196,7 +234,10 @@ describe("DayaJaga deterministic scheduler", () => {
 
   it("rejects malformed or off-grid input instead of mislabeling it as infeasible", () => {
     assert.throws(
-      () => scheduleTasks(household1300, [task({ id: "bad-grid", estimatedVA: 300, preferredStart: "18:10" })]),
+      () =>
+        scheduleTasks(household1300, [
+          task({ id: "bad-grid", estimatedVA: 300, preferredStart: "18:10" }),
+        ]),
       ScheduleValidationError,
     );
   });
