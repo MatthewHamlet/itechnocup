@@ -9,5 +9,5 @@
     "outDir": ".next/test-dist",
     "rootDir": "."
   },
-  "include": ["lib/dayajaga/**/*.ts", "tests/dayajaga/**/*.ts"]
+  "include": ["lib/farad/**/*.ts", "tests/farad/**/*.ts"]
 }
