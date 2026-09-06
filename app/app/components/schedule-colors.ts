@@ -1,6 +1,5 @@
 import type { Activity } from "./plan-model";
 
-// Shared by the desktop and mobile schedules.
 const TINT: Record<string, { bg: string; ink: string }> = {
   masak: { bg: "bg-farad-ambersoft", ink: "text-farad-amber" },
   rice: { bg: "bg-farad-ambersoft", ink: "text-farad-amber" },
