@@ -58,8 +58,15 @@ export function usePlan() {
   return value;
 }
 
-export default function PlanProvider({ children }: { children: ReactNode }) {
-  const household = useHouseholdSettings();
+export default function PlanProvider({
+  children,
+  household: pinned,
+}: {
+  children: ReactNode;
+  household?: HouseholdCapacity;
+}) {
+  const stored = useHouseholdSettings();
+  const household = pinned ?? stored;
   const planningLimitVA = calculatePlanningLimitVA(household);
   const [activities, setActivities] = useState<Activity[]>(SEED);
   const [moves, setMoves] = useState<Move[]>([]);

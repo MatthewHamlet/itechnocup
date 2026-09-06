@@ -64,7 +64,6 @@ function HouseholdForm() {
           <section aria-label="Profil listrik rumah" className={styles.hero}>
             <div className={styles.heroTop}>
               <span className={styles.heroLabel}><HouseLine size={19} weight="duotone" aria-hidden /> Profil rumah</span>
-              <span className={styles.badge}><Lightning size={12} weight="fill" aria-hidden /> LISTRIK RUMAH</span>
             </div>
             <div className={styles.scene}>
               <div className={styles.heroCopy}>
@@ -85,7 +84,6 @@ function HouseholdForm() {
           <section aria-labelledby="capacity-breakdown" className={`${styles.panel} ${styles.breakdown}`}>
             <div className={styles.sectionHeading}>
               <h2 id="capacity-breakdown" className={styles.heading}>Ruang listrikmu</h2>
-              <span className={styles.status} data-dirty={dirty}>{dirty ? "Pratinjau perubahan" : "Sesuai pengaturan"}</span>
             </div>
             <p className={styles.description}>Satu kapasitas, dibagi sesuai kebutuhan.</p>
             <div className={styles.chartRow}>
@@ -96,7 +94,7 @@ function HouseholdForm() {
                     const circumference = 2 * Math.PI * 83;
                     const length = segment.value / capacity * circumference;
                     const offset = segments.slice(0, index).reduce((sum, s) => sum + s.value, 0) / capacity * circumference;
-                    return <circle key={segment.label} cx="100" cy="100" r="83" fill="none" stroke={segment.color} strokeWidth="15" strokeLinecap="round" strokeDasharray={`${Math.max(0, length - 10)} ${circumference}`} strokeDashoffset={-offset - 5} opacity={length > 10 ? 1 : 0} />;
+                    return <circle key={segment.label} cx="100" cy="100" r="83" fill="none" stroke={segment.color} strokeWidth="15" strokeLinecap="butt" strokeDasharray={`${length} ${circumference - length}`} strokeDashoffset={-offset} opacity={length > 0 ? 1 : 0} />;
                   })}
                 </svg>
                 <div aria-hidden className={styles.chartCenter}>
@@ -148,9 +146,11 @@ function HouseholdForm() {
           </div>
           <div className={styles.formBottom}>
             <div className={styles.limit}><div><p className={styles.limitLabel}>Batas rencana</p><p className={styles.limitHint}>Daya terpasang − cadangan</p></div><p className={styles.limitValue}>{formatVA(limit)}<span>VA</span></p></div>
-            <button type="submit" disabled={!dirty || !valid} className={styles.save}><Check size={17} weight="bold" aria-hidden />{dirty ? "Simpan perubahan" : "Pengaturan tersimpan"}</button>
-            {dirty && <button type="button" onClick={cancel} className={styles.cancel}>Batalkan perubahan</button>}
-            <p role="status" aria-live="polite" className={message ? styles.error : styles.saveStatus}>{message || (dirty ? "Perubahan diterapkan setelah kamu simpan." : "Dipakai Farad untuk menyusun rencana kegiatanmu.")}</p>
+            <div className={styles.actions}>
+              {dirty && <button type="button" onClick={cancel} className={styles.cancel}>Batalkan</button>}
+              <button type="submit" disabled={!dirty || !valid} className={styles.save}><Check size={17} weight="bold" aria-hidden />{dirty ? "Simpan" : "Simpan perubahan"}</button>
+            </div>
+            <p role="status" aria-live="polite" className={`${styles.saveStatus}${message ? ` ${styles.error}` : ""}`}>{message || "Perubahan diterapkan setelah kamu simpan."}</p>
           </div>
         </form>
       </div>

@@ -15,8 +15,8 @@ const linkGroups = [
     heading: "Pelajari",
     links: [
       { label: "Cara kerja", href: "#how-it-works" },
-      { label: "Perhitungan", href: "#energy" },
-      { label: "Asumsi & batasan", href: "#energy" },
+      { label: "Perhitungan", href: "#how-it-works" },
+      { label: "Kenalan sama Farad", href: "#farad" },
     ],
   },
   {

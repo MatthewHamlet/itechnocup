@@ -16,12 +16,6 @@ export default function FaradAppLayout({
 }) {
   return (
     <AppPreferences>
-      <link rel="preconnect" href="https://api.fontshare.com" />
-      <link rel="preconnect" href="https://cdn.fontshare.com" crossOrigin="" />
-      <link
-        rel="stylesheet"
-        href="https://api.fontshare.com/v2/css?f%5B%5D=satoshi@1,2&display=swap"
-      />
       <PlanProvider>
         <AppShell>{children}</AppShell>
       </PlanProvider>

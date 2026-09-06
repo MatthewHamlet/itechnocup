@@ -130,7 +130,7 @@ export default function Hero() {
 
             <div className="mt-9 flex flex-wrap items-center gap-3">
               <Link
-                href="#cta"
+                href="/masuk"
                 className="farad-press inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold text-farad-ink hover:bg-farad-peach"
               >
                 Coba Farad

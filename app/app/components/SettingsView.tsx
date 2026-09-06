@@ -8,6 +8,7 @@ import { savePreferences, usePreferences } from "./AppPreferences";
 import { usePlan } from "./PlanProvider";
 import { formatVA } from "./plan-model";
 import SettingRow from "./settings/SettingRow";
+import { signOut } from "@/app/masuk/actions";
 import Toggle from "./settings/Toggle";
 import styles from "./SettingsView.module.css";
 
@@ -19,7 +20,7 @@ const SECTIONS = [
 ] as const;
 type SectionId = typeof SECTIONS[number]["id"];
 
-export default function SettingsView() {
+export default function SettingsView({ email = null }: { email?: string | null }) {
   const [selected, setSelected] = useState<SectionId>("profile");
   const { name } = usePreferences();
   const { household } = usePlan();
@@ -66,7 +67,7 @@ export default function SettingsView() {
           <div className={styles.panelHeader}><span className={styles.icon} data-tone={section.tone}><Icon size={23} aria-hidden /></span><div><h2>{section.title}</h2><p>{section.description}</p></div></div>
           {selected === "profile" && <ProfileForm key={name} />}
           {selected === "appearance" && <Appearance />}
-          {selected === "data" && <DataPanel />}
+          {selected === "data" && <DataPanel email={email} />}
           {selected === "about" && <AboutPanel />}
         </section>
       </div>
@@ -109,7 +110,7 @@ function Appearance() {
   </div>;
 }
 
-function DataPanel() {
+function DataPanel({ email }: { email: string | null }) {
   const { household } = usePlan();
   return <div className={styles.body}>
     <div className={styles.info}><ShieldCheck size={22} aria-hidden /><p>Nama, preferensi tampilan, dan pengaturan rumah disimpan di browser ini. Data tersebut belum tersinkron ke perangkat lain.</p></div>
@@ -118,6 +119,11 @@ function DataPanel() {
       <SettingRow title="Pengaturan rumah" description={`Daya ${formatVA(household.installedVA)} VA, beban dasar, dan cadangan.`} value="Lokal" />
       <SettingRow title="Rencana kegiatan" description="Perubahan kegiatan berlaku selama sesi ini. Memuat ulang halaman mengembalikan kegiatan awal." />
     </div>
+    <p className={styles.groupLabel}>AKUN</p>
+    <div className={styles.rows}>
+      <SettingRow title="Masuk sebagai" description={email ?? "Belum masuk. Rencana tetap bisa dipakai di perangkat ini."} value={email ? "Supabase" : undefined} />
+    </div>
+    {email && <form action={signOut}><button type="submit" className={styles.inlineLink}>Keluar dari akun <ArrowUpRight size={17} aria-hidden /></button></form>}
     <Link href="/app/rumah" className={styles.inlineLink}>Kelola pengaturan rumah <ArrowUpRight size={17} aria-hidden /></Link>
   </div>;
 }

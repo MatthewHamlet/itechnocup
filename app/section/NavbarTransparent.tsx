@@ -128,7 +128,7 @@ export default function NavbarTransparent() {
         </div>
 
         <Link
-          href="#cta"
+          href="/masuk"
           className={`farad-press z-10 hidden rounded-full px-5 py-2.5 text-sm font-bold transition sm:inline-flex ${
             isScrolled
               ? "bg-farad-forest text-white hover:bg-farad-ink"
@@ -182,7 +182,7 @@ export default function NavbarTransparent() {
             })}
 
             <Link
-              href="#cta"
+              href="/masuk"
               onClick={() => setIsMobileMenuOpen(false)}
               className="mt-2 rounded-full bg-farad-forest px-4 py-3 text-center text-sm font-bold text-white"
             >

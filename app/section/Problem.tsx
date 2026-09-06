@@ -1,15 +1,12 @@
-import { ArrowRight, Gauge } from "lucide-react";
+"use client";
+
+import { ArrowRight } from "lucide-react";
 import Reveal from "../components/Reveal";
 import SectionHeading from "../components/SectionHeading";
 import FallingIcons from "../components/FallingIcons";
-import PlanBoard from "../components/PlanBoard";
-import {
-  HOUSEHOLD,
-  PLANNING_LIMIT_VA,
-  formatVA,
-  loadProfile,
-  peakVA,
-} from "../components/plan";
+import PlanProvider from "@/app/app/components/PlanProvider";
+import TonightSnapshot from "@/app/app/components/TonightSnapshot";
+import { HOUSEHOLD, formatVA } from "@/app/app/components/plan-model";
 
 const collisions = [
   "Rice cooker",
@@ -19,17 +16,7 @@ const collisions = [
   "Pemanas air",
 ];
 
-const MINI_WINDOW_MIN = 180;
-
 export default function Problem() {
-  const slots = loadProfile(false).filter(
-    (slot) => slot.start < MINI_WINDOW_MIN,
-  );
-  const peak = peakVA(slots);
-
-  const overFraction = Math.min(peak / (PLANNING_LIMIT_VA * 1.6), 1);
-  const limitFraction = PLANNING_LIMIT_VA / (PLANNING_LIMIT_VA * 1.6);
-
   return (
     <section
       id="problem"
@@ -78,51 +65,27 @@ export default function Problem() {
           </div>
 
           <Reveal delay={60}>
-            <div className="mx-auto w-full max-w-md overflow-hidden rounded-[26px] border border-farad-border bg-white shadow-xl shadow-farad-ink/10">
-              <div className="flex items-center justify-between gap-3 bg-farad-forest px-4 py-3.5">
-                <p className="text-base font-bold text-white">
-                  Rencana malam ini
-                </p>
-                <span
-                  aria-hidden
-                  className="flex items-center gap-2 text-xs font-semibold text-white/80"
+            <div className="mx-auto w-full max-w-[400px]">
+              <div className="rounded-[44px] bg-farad-ink/90 p-3 shadow-2xl shadow-farad-ink/25 ring-1 ring-farad-ink/10">
+                <div
+                  className="farad-theme overflow-hidden rounded-[34px] bg-app-canvas px-4 pb-5 pt-3"
+                  style={{ fontFamily: "var(--font-satoshi)" }}
                 >
-                  <Gauge size={16} />
-                  {formatVA(HOUSEHOLD.installedVA)} VA
-                </span>
-              </div>
+                  <div className="mb-3 flex items-center justify-between px-1 text-[11px] font-bold text-app-muted">
+                    <span>18.02</span>
+                    <span>Rumah {formatVA(HOUSEHOLD.installedVA)} VA</span>
+                  </div>
 
-              <div className="px-4 py-5">
-                <PlanBoard compact windowMin={MINI_WINDOW_MIN} />
-              </div>
-
-              <div className="border-t border-farad-border bg-farad-ivory px-4 py-4">
-                <div className="flex items-baseline justify-between gap-3">
-                  <p className="text-sm font-bold tabular-nums text-farad-over">
-                    {formatVA(peak)} VA
-                  </p>
-                  <p className="text-xs font-semibold tabular-nums text-farad-ink/70">
-                    batas rencana {formatVA(PLANNING_LIMIT_VA)} VA
-                  </p>
+                  <PlanProvider household={HOUSEHOLD}>
+                    <TonightSnapshot />
+                  </PlanProvider>
                 </div>
-
-                <div className="relative mt-2 h-2 overflow-hidden rounded-full bg-farad-sage">
-                  <div
-                    className="h-full rounded-full bg-farad-over"
-                    style={{ width: `${overFraction * 100}%` }}
-                  />
-                  <span
-                    aria-hidden
-                    className="absolute inset-y-0 w-px bg-farad-forest"
-                    style={{ left: `${limitFraction * 100}%` }}
-                  />
-                </div>
-
-                <p className="mt-2.5 text-xs leading-5 text-farad-ink/70">
-                  Puncaknya jatuh di pukul 18.00, saat empat kegiatan
-                  direncanakan berjalan berdekatan.
-                </p>
               </div>
+
+              <p className="mt-5 text-center text-xs leading-5 text-farad-ink/60">
+                Layar Farad yang asli. Puncaknya jatuh di pukul 18.00, saat empat
+                kegiatan direncanakan berjalan berdekatan.
+              </p>
             </div>
           </Reveal>
         </div>

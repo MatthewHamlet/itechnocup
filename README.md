@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Farad
 
-## Getting Started
+Aplikasi perencana giliran listrik rumah. Landing page ada di `/`, aplikasinya di `/app`, halaman masuk di `/masuk`.
 
-First, run the development server:
+## Menjalankan
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Menyambungkan Supabase (autentikasi)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Tanpa langkah ini aplikasi tetap jalan: `/app` terbuka bebas dan tombol masuk memberi pesan bahwa Supabase belum tersambung.
 
-## Learn More
+1. Buat proyek di [supabase.com](https://supabase.com), lalu salin **Project URL** dan **anon public key** dari Settings → API.
+2. Buat file `.env.local` di root (lihat `.env.local.example`):
 
-To learn more about Next.js, take a look at the following resources:
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=https://xxxxxxxxxxxx.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Di Supabase → Authentication → URL Configuration:
+   - **Site URL**: `http://localhost:3000`
+   - **Redirect URLs**: tambahkan `http://localhost:3000/**` (dan URL produksi bila sudah dideploy).
+4. Tanpa SMTP, matikan konfirmasi email: Authentication → Sign In / Providers → **Email** → matikan **Confirm email**. Kalau ini menyala sementara SMTP belum diatur, akun baru tidak akan pernah bisa masuk karena emailnya tidak pernah terkirim.
+5. Untuk tombol Google:
+   - Google Cloud Console → APIs & Services → Credentials → **Create OAuth client ID** (Web application).
+   - Authorized redirect URI: `https://<project-ref>.supabase.co/auth/v1/callback`
+   - Salin Client ID + Client Secret ke Supabase → Authentication → Providers → **Google**, lalu aktifkan.
+6. Jalankan ulang `npm run dev`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Setelah tersambung, `/app` hanya bisa dibuka setelah masuk; pengunjung yang belum masuk dialihkan ke `/masuk?next=...`. Tombol keluar ada di Pengaturan → Data di perangkat.
 
-## Deploy on Vercel
+### Peta file autentikasi
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| File | Isi |
+| --- | --- |
+| `lib/supabase/config.ts` | Env var dan pengecekan `isSupabaseConfigured()` |
+| `lib/supabase/server.ts` | Client Supabase untuk Server Component & Server Action |
+| `lib/supabase/proxy.ts` | Penyegaran sesi berbasis cookie untuk `proxy.ts` |
+| `proxy.ts` | Penjaga rute `/app/*` dan pengalihan `/masuk` bila sudah masuk |
+| `app/masuk/actions.ts` | Server action: `signIn`, `signUp`, `signInWithGoogle`, `signOut` |
+| `app/auth/callback/route.ts` | Menukar kode OAuth / tautan email jadi sesi |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Tes
+
+```bash
+npm run test
+npm run typecheck
+```

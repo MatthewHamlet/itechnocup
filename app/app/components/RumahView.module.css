@@ -26,7 +26,7 @@
   overflow: hidden;
   border: 1px solid #c4d8e8;
   border-radius: 24px;
-  background: radial-gradient(ellipse at 85% 34%, #f5f8fbe6, transparent 52%), linear-gradient(125deg, #e1edf6, #bdd4e7);
+  background: radial-gradient(ellipse at 85% 34%, #f5f8fb55, transparent 65%), linear-gradient(125deg, #e1edf6, #bdd4e7);
 }
 
 .hero::before {
@@ -36,6 +36,7 @@
   content: "";
   background-image: linear-gradient(#ffffff38 1px, transparent 1px), linear-gradient(90deg, #ffffff38 1px, transparent 1px);
   background-size: 48px 48px;
+  -webkit-mask-image: linear-gradient(105deg, transparent 25%, #000 95%);
   mask-image: linear-gradient(105deg, transparent 25%, #000 95%);
 }
 
@@ -54,20 +55,6 @@
   font-size: 13px;
   font-weight: 600;
   color: #395b77;
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  border: 1px solid #ffffff9c;
-  border-radius: 8px;
-  background: #ffffff66;
-  color: #42617b;
-  font-size: 10px;
-  font-weight: 600;
-  white-space: nowrap;
 }
 
 .scene {
@@ -94,6 +81,7 @@
 .house {
   position: absolute;
   pointer-events: none;
+  -webkit-user-select: none;
   user-select: none;
   right: -42px;
   bottom: -18px;
@@ -108,6 +96,7 @@
   border-top: 1px solid #ffffffb0;
   background: #ffffff7a;
   padding: 19px 12px;
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
 .stats > div { text-align: center; padding: 0 4px; }
@@ -118,8 +107,6 @@
 .sectionHeading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 .heading { font-size: 20px; font-weight: 600; letter-spacing: -.5px; color: #2b4056; }
 .description { margin-top: 5px; font-size: 12px; line-height: 1.7; color: var(--color-app-muted); }
-.status { padding: 5px 9px; border-radius: 7px; background: #edf3f8; color: #52718c; font-size: 10px; font-weight: 500; }
-.status[data-dirty="true"] { background: #fcf0df; color: #8a6234; }
 .chartRow { display: flex; align-items: center; gap: 25px; margin-top: 22px; }
 .chart { position: relative; width: 164px; height: 164px; flex-shrink: 0; }
 .chartCenter { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
@@ -168,11 +155,14 @@
 .limitHint { margin-top: 4px; font-size: 10px; color: #607a90; }
 .limitValue { font-family: var(--font-nohemi); font-size: 26px; letter-spacing: -.8px; white-space: nowrap; }
 .limitValue span { margin-left: 4px; font-size: 11px; letter-spacing: 0; }
-.save { margin-top: 18px; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; border: 1px solid #486f91; border-radius: 12px; background: linear-gradient(110deg, #527da1, #436c90); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; transition: filter .15s; }
+.actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
+.save { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 48px; border: 1px solid #486f91; border-radius: 12px; background: linear-gradient(110deg, #527da1, #436c90); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; transition: filter .15s; }
+.save:only-child { grid-column: 1 / -1; }
 .save:hover:not(:disabled) { filter: brightness(1.08); }
 .save:disabled { background: #edf2f7; color: #5e7890; border-color: #e0e7ee; cursor: default; }
 .save:focus-visible, .cancel:focus-visible { outline: 2px solid #527da1; outline-offset: 3px; }
-.cancel { margin-top: 7px; min-height: 40px; width: 100%; border-radius: 10px; font-size: 12px; color: var(--color-app-muted); cursor: pointer; }
+.cancel { height: 48px; width: 100%; border: 1px solid #dce3eb; border-radius: 12px; background: #f8fafc; font-size: 13px; font-weight: 500; color: var(--color-app-muted); cursor: pointer; }
+.cancel:hover { background: #edf2f7; }
 .saveStatus { margin-top: 12px; font-size: 10px; line-height: 1.6; text-align: center; color: var(--color-app-muted); }
 
 @media (min-width: 1024px) {
@@ -210,7 +200,6 @@
   .legendCopy p { font-size: 11px; }
   .stats dd { font-size: 15px; }
   .stats dt { font-size: 10px; }
-  .badge { font-size: 9px; padding: 5px 7px; }
 }
 @media (max-width: 359px) {
   .capacity { font-size: 38px; }

@@ -84,7 +84,7 @@ export default function SaranFaradCard({ className = "" }: { className?: string 
     <section
       /* tall enough that Estimasi Energi always starts below the rail's fold:
          Kapasitas Rumah plus the two gaps take 406px below it; the rest is buffer */
-      style={{ minHeight: "max(300px, calc(100dvh - 438px))" }}
+      style={{ minHeight: "var(--farad-advice-min-h, max(300px, calc(100dvh - 438px)))" }}
       className={`relative flex flex-col overflow-hidden rounded-[30px] bg-farad-paper shadow-[0_1px_2px_rgba(24,32,24,0.03),0_24px_48px_-36px_rgba(24,32,24,0.3)] ring-1 ring-[#e8e3d9] ${className}`}
     >
       {/* background — faded home corner, cropped by the card edges */}
