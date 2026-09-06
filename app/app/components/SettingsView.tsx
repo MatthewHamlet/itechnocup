@@ -1,10 +1,13 @@
 "use client";
 
-import { useRef, useState, type FormEvent, type KeyboardEvent } from "react";
+import { useRef, useState, useTransition, type FormEvent, type KeyboardEvent } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Check, ChevronRight, Database, House, Info, Laptop, Palette, Pencil, ShieldCheck, UserRound, Zap } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowUpRight, Camera, Check, ChevronRight, Cloud, Database, House, Info, Laptop, Palette, Pencil, ShieldCheck, UserRound, Zap } from "lucide-react";
 import PageHeader, { PAGE_SHELL } from "./PageHeader";
-import { savePreferences, usePreferences } from "./AppPreferences";
+import { savePreferences, useAccount, usePreferences } from "./AppPreferences";
+import { compressImage, type CompressedImage } from "./compress-image";
+import { saveProfileAction } from "../actions";
 import { usePlan } from "./PlanProvider";
 import { formatVA } from "./plan-model";
 import SettingRow from "./settings/SettingRow";
@@ -23,6 +26,7 @@ type SectionId = typeof SECTIONS[number]["id"];
 export default function SettingsView({ email = null }: { email?: string | null }) {
   const [selected, setSelected] = useState<SectionId>("profile");
   const { name } = usePreferences();
+  const { avatarUrl: accountAvatar } = useAccount();
   const { household } = usePlan();
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const section = SECTIONS.find((item) => item.id === selected)!;
@@ -47,8 +51,10 @@ export default function SettingsView({ email = null }: { email?: string | null }
       <div className={styles.layout}>
         <aside className={styles.rail}>
           <div className={styles.profile}>
-            <div className={styles.avatar} aria-hidden>{Array.from(name)[0]?.toUpperCase()}</div>
-            <div className={styles.profileCopy}><h2>{name}</h2><p><span /> Profil di perangkat ini</p></div>
+            {accountAvatar
+              ? <img src={accountAvatar} alt="" className={styles.avatar} />
+              : <div className={styles.avatar} aria-hidden>{Array.from(name)[0]?.toUpperCase()}</div>}
+            <div className={styles.profileCopy}><h2>{name}</h2><p><span /> {email ? "Tersimpan di akunmu" : "Profil di perangkat ini"}</p></div>
             <button className={styles.edit} type="button" aria-label="Ubah profil" onClick={() => { setSelected("profile"); buttons.current[0]?.focus(); }}><Pencil size={16} /></button>
           </div>
           <div className={styles.houseSummary}><House size={18} aria-hidden /><div><p>Rumah saya</p><strong>{formatVA(household.installedVA)} <span>VA terpasang</span></strong></div></div>
@@ -61,7 +67,7 @@ export default function SettingsView({ email = null }: { email?: string | null }
               </button>;
             })}
           </div>
-          <div className={styles.railFooter}><Zap size={15} aria-hidden /><span>Farad <span className="text-app-dim">/</span> versi 0.1.0</span></div>
+          <div className={styles.railFooter}><Zap size={15} aria-hidden /><span>Farad</span></div>
         </aside>
         <section id="settings-panel" role="tabpanel" aria-labelledby={`settings-tab-${selected}`} tabIndex={0} className={styles.panel}>
           <div className={styles.panelHeader}><span className={styles.icon} data-tone={section.tone}><Icon size={23} aria-hidden /></span><div><h2>{section.title}</h2><p>{section.description}</p></div></div>
@@ -77,19 +83,101 @@ export default function SettingsView({ email = null }: { email?: string | null }
 
 function ProfileForm() {
   const { name } = usePreferences();
+  const { avatarUrl, signedIn } = useAccount();
+  const router = useRouter();
+  const picker = useRef<HTMLInputElement>(null);
   const [draft, setDraft] = useState(name);
+  const [photo, setPhoto] = useState<CompressedImage | null>(null);
   const [error, setError] = useState("");
-  const dirty = draft.trim() !== name;
+  const [feedback, setFeedback] = useState("");
+  const [saving, startSaving] = useTransition();
+
+  const preview = photo?.dataUrl ?? avatarUrl;
+  const dirty = draft.trim() !== name || photo !== null;
+
+  async function pick(file: File | undefined) {
+    if (!file) return;
+    setError("");
+    try {
+      setPhoto(await compressImage(file, 512));
+    } catch {
+      setError("Fotonya tidak bisa dibuka. Coba pilih file lain.");
+    }
+  }
+
   function submit(event: FormEvent) {
     event.preventDefault();
-    if (!savePreferences({ name: draft })) setError("Nama belum tersimpan. Periksa izin penyimpanan browser, lalu coba lagi.");
+    if (!draft.trim()) return;
+
+    if (!signedIn) {
+      const saved = savePreferences({ name: draft });
+      setError(saved ? "" : "Nama belum tersimpan. Periksa izin penyimpanan browser, lalu coba lagi.");
+      setFeedback(saved ? "Nama tersimpan di browser ini." : "");
+      return;
+    }
+
+    startSaving(async () => {
+      const result = await saveProfileAction({
+        name: draft,
+        avatar: photo ? { base64: photo.base64, mediaType: photo.mediaType } : null,
+      });
+
+      if (!result.ok) {
+        setError(result.error ?? "Profil belum tersimpan.");
+        return;
+      }
+
+      savePreferences({ name: draft });
+      setPhoto(null);
+      setError("");
+      setFeedback("Profil tersimpan di akunmu.");
+      router.refresh();
+    });
   }
+
   return <form className={styles.body} onSubmit={submit}>
-    <div className={styles.profilePreview}><span className={styles.previewAvatar} aria-hidden>{Array.from(draft.trim() || name)[0]?.toUpperCase()}</span><div><span className={styles.eyebrow}>SAPAAN DI HOME</span><p>Selamat pagi, <strong>{draft.trim() || name}</strong> <span aria-hidden>👋</span></p></div></div>
-    <div className={styles.field}><label htmlFor="profile-name">Nama panggilan</label><p>Nama ini muncul di Home dan profilmu.</p><input id="profile-name" autoComplete="given-name" maxLength={40} required value={draft} onChange={(event) => { setDraft(event.target.value); setError(""); }} /><span className={styles.fieldHint}>Maksimal 40 karakter.</span></div>
-    <div className={styles.info}><Laptop size={19} aria-hidden /><p>Profil ini tersimpan di browser yang sedang kamu gunakan. Kamu bisa mengubahnya kapan saja.</p></div>
-    <div className={styles.actions}><button type="submit" disabled={!dirty || !draft.trim()} className={styles.save}><Check size={17} aria-hidden />{dirty ? "Simpan perubahan" : "Profil tersimpan"}</button>{dirty && <button type="button" className={styles.cancel} onClick={() => { setDraft(name); setError(""); }}>Batalkan</button>}</div>
-    <p role="status" className={styles.feedback}>{error || (dirty ? "Simpan untuk memperbarui sapaanmu." : "Nama profil sudah tersimpan.")}</p>
+    <div className={styles.profilePreview}>
+      {preview
+        ? <img src={preview} alt="" className={styles.previewAvatar} />
+        : <span className={styles.previewAvatar} aria-hidden>{Array.from(draft.trim() || name)[0]?.toUpperCase()}</span>}
+      <div><span className={styles.eyebrow}>SAPAAN DI HOME</span><p>Selamat pagi, <strong>{draft.trim() || name}</strong> <span aria-hidden>👋</span></p></div>
+    </div>
+
+    <input ref={picker} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(event) => pick(event.target.files?.[0])} />
+
+    <div className={styles.field}>
+      <label htmlFor="profile-name">Nama panggilan</label>
+      <p>Nama ini muncul di Home dan profilmu.</p>
+      <input id="profile-name" autoComplete="given-name" maxLength={40} required value={draft} onChange={(event) => { setDraft(event.target.value); setError(""); setFeedback(""); }} />
+      <span className={styles.fieldHint}>Maksimal 40 karakter.</span>
+    </div>
+
+    <div className={styles.rows}>
+      <SettingRow
+        icon={<Camera size={19} aria-hidden />}
+        title="Foto profil"
+        description={signedIn ? "Ambil dari galeri, tersimpan di akunmu." : "Masuk dulu untuk menyimpan foto profil."}
+        interactive={signedIn}
+        onClick={() => picker.current?.click()}
+        value={!signedIn ? "Perlu masuk" : photo ? "Foto baru" : avatarUrl ? "Terpasang" : "Belum ada"}
+      />
+    </div>
+
+    <div className={styles.info}>
+      {signedIn ? <Cloud size={19} aria-hidden /> : <Laptop size={19} aria-hidden />}
+      <p>{signedIn
+        ? "Nama dan foto profil tersimpan di akun Farad-mu, jadi ikut ke perangkat lain."
+        : "Profil ini tersimpan di browser yang sedang kamu gunakan. Masuk untuk menyimpannya di akun."}</p>
+    </div>
+
+    <div className={styles.actions}>
+      <button type="submit" disabled={saving || !dirty || !draft.trim()} className={styles.save}>
+        <Check size={17} aria-hidden />{saving ? "Menyimpan…" : dirty ? "Simpan perubahan" : "Profil tersimpan"}
+      </button>
+      {dirty && !saving && <button type="button" className={styles.cancel} onClick={() => { setDraft(name); setPhoto(null); setError(""); }}>Batalkan</button>}
+    </div>
+
+    <p role="status" className={styles.feedback}>{error || feedback || (dirty ? "Simpan untuk memperbarui profilmu." : "Profil sudah tersimpan.")}</p>
   </form>;
 }
 
@@ -132,7 +220,7 @@ function AboutPanel() {
   return <div className={styles.body}>
     <div className={styles.aboutBrand}><span><Zap size={28} fill="currentColor" aria-hidden /></span><div><h3>Farad</h3><p>Ruang untuk setiap kegiatan.</p></div></div>
     <p className={styles.aboutCopy}>Farad membantu kamu merencanakan kegiatan yang memakai listrik, melihat jam yang padat, dan mengatur giliran sesuai kapasitas rumah.</p>
-    <div className={styles.rows}><SettingRow title="Versi aplikasi" value="0.1.0" /><SettingRow title="Perencanaan dari rumahmu" description="Perhitungan memakai daya alat, durasi, dan pengaturan rumah yang kamu isi; bukan pembacaan meter listrik langsung." /></div>
+    <div className={styles.rows}><SettingRow title="Perencanaan dari rumahmu" description="Perhitungan memakai daya alat, durasi, dan pengaturan rumah yang kamu isi; bukan pembacaan meter listrik langsung." /></div>
     <Link href="/app" className={styles.inlineLink}>Lihat rencana di Home <ArrowUpRight size={17} aria-hidden /></Link>
   </div>;
 }

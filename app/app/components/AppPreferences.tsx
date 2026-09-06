@@ -42,7 +42,13 @@ export function savePreferences(changes: Partial<Preferences>) {
   } catch { return false; }
 }
 
-const AccountNameContext = createContext<string | null>(null);
+type Account = { name: string | null; avatarUrl: string | null; signedIn: boolean };
+
+const AccountContext = createContext<Account>({ name: null, avatarUrl: null, signedIn: false });
+
+export function useAccount() {
+  return useContext(AccountContext);
+}
 
 function storedName(raw: string | null): string | null {
   try {
@@ -54,12 +60,13 @@ function storedName(raw: string | null): string | null {
 
 export function usePreferences() {
   const raw = useSyncExternalStore(subscribe, snapshot, () => null);
-  const accountName = useContext(AccountNameContext);
+  const { name: accountName, signedIn } = useContext(AccountContext);
   return useMemo(() => {
     const preferences = parse(raw);
-    if (storedName(raw) || !accountName) return preferences;
-    return { ...preferences, name: accountName };
-  }, [raw, accountName]);
+    if (!accountName) return preferences;
+    if (signedIn) return { ...preferences, name: accountName };
+    return storedName(raw) ? preferences : { ...preferences, name: accountName };
+  }, [raw, accountName, signedIn]);
 }
 
 export function DisplayName() {
@@ -69,14 +76,23 @@ export function DisplayName() {
 export default function AppPreferences({
   children,
   accountName = null,
+  accountAvatar = null,
+  signedIn = false,
 }: {
   children: ReactNode;
   accountName?: string | null;
+  accountAvatar?: string | null;
+  signedIn?: boolean;
 }) {
+  const account = useMemo(
+    () => ({ name: accountName, avatarUrl: accountAvatar, signedIn }),
+    [accountName, accountAvatar, signedIn],
+  );
+
   return (
-    <AccountNameContext.Provider value={accountName}>
+    <AccountContext.Provider value={account}>
       <PreferenceShell>{children}</PreferenceShell>
-    </AccountNameContext.Provider>
+    </AccountContext.Provider>
   );
 }
 

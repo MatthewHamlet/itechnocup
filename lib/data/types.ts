@@ -21,6 +21,7 @@ export type HouseholdRow = {
 
 export type ProfileRow = {
   display_name: string;
+  avatar_url?: string | null;
   onboarded_at: string | null;
 };
 

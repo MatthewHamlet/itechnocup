@@ -264,6 +264,11 @@ function CustomForm({ onReady }: { onReady: (item: CatalogItem) => void }) {
   const [va, setVa] = useState(300);
   const [duration, setDuration] = useState(60);
 
+  const safeDuration = Math.min(
+    WINDOW_END - WINDOW_START,
+    Math.max(SLOT_MIN, Math.round(duration / SLOT_MIN) * SLOT_MIN),
+  );
+  const safeVa = Math.max(1, Math.round(va));
   const ready = label.trim().length > 0 && va > 0 && duration > 0;
 
   return (
@@ -312,9 +317,9 @@ function CustomForm({ onReady }: { onReady: (item: CatalogItem) => void }) {
             label: label.trim(),
             appliance: "Ditulis sendiri",
             icon: Plugs,
-            va,
-            watts: va,
-            duration,
+            va: safeVa,
+            watts: safeVa,
+            duration: safeDuration,
             flexibility: "flexible",
             note: "Ditulis sendiri",
           })

@@ -35,6 +35,16 @@ Tanpa langkah ini aplikasi tetap jalan: `/app` terbuka bebas dan tombol masuk me
 
 Setelah tersambung, `/app` hanya bisa dibuka setelah masuk; pengunjung yang belum masuk dialihkan ke `/masuk?next=...`. Tombol keluar ada di Pengaturan → Data di perangkat.
 
+## Skema database
+
+Jalankan berurutan di Supabase → SQL Editor (semuanya idempotent, aman diulang):
+
+| File | Isi |
+| --- | --- |
+| `supabase/schema.sql` | Tabel `profiles`, `households`, `activities`, RLS, trigger pendaftaran |
+| `supabase/002-onboarding.sql` | Kolom `profiles.onboarded_at` |
+| `supabase/003-profile.sql` | Kolom `profiles.avatar_url` dan bucket Storage `avatars` beserta policy-nya |
+
 ## Scan alat dari foto
 
 Halaman Aktivitas → Tambah → **Foto** memakai Gemini untuk mengenali alat listrik di foto

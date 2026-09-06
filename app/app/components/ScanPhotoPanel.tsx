@@ -11,26 +11,11 @@ import {
   Warning,
 } from "@phosphor-icons/react";
 import { scanApplianceAction } from "../scan-actions";
+import { compressImage } from "./compress-image";
 import type { Detection } from "@/lib/scan/detect";
 import { CATALOG, SLOT_MIN, WINDOW_END, WINDOW_START, formatVA, type CatalogItem } from "./plan-model";
 
 const MAX_DURATION = WINDOW_END - WINDOW_START;
-
-async function compress(file: File) {
-  const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
-  const scale = Math.min(1, 1024 / Math.max(bitmap.width, bitmap.height));
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.round(bitmap.width * scale);
-  canvas.height = Math.round(bitmap.height * scale);
-
-  const context = canvas.getContext("2d");
-  if (!context) throw new Error("canvas");
-  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  bitmap.close();
-
-  const dataUrl = canvas.toDataURL("image/jpeg", 0.72);
-  return { dataUrl, base64: dataUrl.slice(dataUrl.indexOf(",") + 1) };
-}
 
 function toCatalogItem(detection: Detection): CatalogItem {
   const known = CATALOG.find((item) => item.key === detection.catalog_key);
@@ -71,7 +56,7 @@ export default function ScanPhotoPanel({
     setScanning(true);
 
     try {
-      const { dataUrl, base64 } = await compress(file);
+      const { dataUrl, base64 } = await compressImage(file);
       setPreview(dataUrl);
 
       const result = await scanApplianceAction(base64, "image/jpeg");

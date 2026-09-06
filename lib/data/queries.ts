@@ -34,7 +34,7 @@ export const getAppData = cache(async (planDate: string): Promise<AppData> => {
   if (!user) return empty;
 
   const [profile, household, activities] = await Promise.all([
-    supabase.from("profiles").select("display_name,onboarded_at").eq("id", user.id).maybeSingle(),
+    supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
     supabase
       .from("households")
       .select("installed_va,base_load_va,reserve_fraction")

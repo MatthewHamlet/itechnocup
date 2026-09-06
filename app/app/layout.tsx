@@ -19,7 +19,11 @@ export default async function FaradAppLayout({
   const { userId, profile, household, activities } = await getAppData(PLAN_DATE_ISO);
 
   return (
-    <AppPreferences accountName={profile?.display_name ?? null}>
+    <AppPreferences
+      accountName={profile?.display_name ?? null}
+      accountAvatar={profile?.avatar_url ?? null}
+      signedIn={userId !== null}
+    >
       <PlanProvider
         household={{
           installedVA: household.installed_va,

@@ -14,7 +14,11 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
   ]),
   {
-    files: ["app/app/components/ScanPhotoPanel.tsx"],
+    files: [
+      "app/app/components/ScanPhotoPanel.tsx",
+      "app/app/components/SettingsView.tsx",
+      "app/app/components/AppShell.tsx",
+    ],
     rules: { "@next/next/no-img-element": "off" },
   },
 ]);

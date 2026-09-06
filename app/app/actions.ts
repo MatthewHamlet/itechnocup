@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import type { ActivityRow } from "@/lib/data/types";
 
+const AVATAR_MEDIA = ["image/jpeg", "image/png", "image/webp"];
+
 async function userId(): Promise<string | null> {
   if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
@@ -118,13 +120,75 @@ export async function finishOnboardingAction(): Promise<boolean> {
   if (!id) return false;
 
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("profiles")
-    .update({ onboarded_at: new Date().toISOString() })
-    .eq("id", id);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const metaName = String(user?.user_metadata?.full_name ?? "").trim();
+
+  const { error } = await supabase.from("profiles").upsert(
+    {
+      id,
+      display_name: metaName || "Teman Farad",
+      onboarded_at: new Date().toISOString(),
+    },
+    { onConflict: "id", ignoreDuplicates: false },
+  );
 
   if (error) return false;
 
   revalidatePath("/app", "layout");
   return true;
+}
+
+export async function saveProfileAction(input: {
+  name: string;
+  avatar?: { base64: string; mediaType: string } | null;
+}): Promise<{ ok: boolean; error?: string; avatarUrl?: string }> {
+  const id = await userId();
+  if (!id) return { ok: false, error: "Masuk dulu untuk menyimpan profil." };
+
+  const name = input.name.trim();
+  if (!name) return { ok: false, error: "Nama tidak boleh kosong." };
+  if (name.length > 40) return { ok: false, error: "Nama maksimal 40 karakter." };
+
+  const supabase = await createClient();
+  let avatarUrl: string | undefined;
+
+  if (input.avatar) {
+    if (!AVATAR_MEDIA.includes(input.avatar.mediaType)) {
+      return { ok: false, error: "Format fotonya belum didukung. Pakai JPG, PNG, atau WebP." };
+    }
+
+    const bytes = Buffer.from(input.avatar.base64, "base64");
+    if (bytes.byteLength > 2_000_000) {
+      return { ok: false, error: "Fotonya terlalu besar. Pilih foto yang lebih kecil." };
+    }
+
+    const path = `${id}/avatar`;
+    const upload = await supabase.storage
+      .from("avatars")
+      .upload(path, bytes, { contentType: input.avatar.mediaType, upsert: true });
+
+    if (upload.error) {
+      return { ok: false, error: "Foto profil gagal diunggah. Coba lagi sebentar lagi." };
+    }
+
+    const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+    avatarUrl = `${data.publicUrl}?v=${Date.now()}`;
+  }
+
+  const { error } = await supabase.from("profiles").upsert(
+    {
+      id,
+      display_name: name,
+      ...(avatarUrl ? { avatar_url: avatarUrl } : {}),
+    },
+    { onConflict: "id", ignoreDuplicates: false },
+  );
+
+  if (error) return { ok: false, error: "Profil belum tersimpan. Coba lagi sebentar lagi." };
+
+  revalidatePath("/app", "layout");
+  return { ok: true, avatarUrl };
 }

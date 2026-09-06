@@ -17,9 +17,10 @@ import {
   type NavItem,
 } from "./nav";
 import BottomNav from "./BottomNav";
+import SyncBanner from "./SyncBanner";
 import { usePlan } from "./PlanProvider";
 import { formatVA } from "./plan-model";
-import { DisplayName } from "./AppPreferences";
+import { DisplayName, useAccount } from "./AppPreferences";
 
 const RailContext = createContext(true);
 
@@ -111,6 +112,7 @@ function Rail({
   pathname: string;
 }) {
   const { household } = usePlan();
+  const { avatarUrl } = useAccount();
   const reduce = useReducedMotion();
   const size = reduce ? { duration: 0 } : RAIL_SPRING;
   const fade = reduce ? { duration: 0 } : { duration: 0.2, ease: EASE };
@@ -168,9 +170,13 @@ function Rail({
       <div className="px-3 pb-1 pt-3.5">
         <div className="group/me relative flex h-12 items-center rounded-[18px] px-3.5">
           <span className="relative z-10 grid w-8 shrink-0 place-items-center">
-            <span className="grid size-8 place-items-center rounded-full bg-farad-sage text-farad-forest">
-              <User size={18} weight="fill" />
-            </span>
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="" className="size-8 rounded-full object-cover ring-1 ring-app-line" />
+            ) : (
+              <span className="grid size-8 place-items-center rounded-full bg-farad-sage text-farad-forest">
+                <User size={18} weight="fill" />
+              </span>
+            )}
           </span>
           <motion.span
             animate={{ width: open ? "auto" : 0, opacity: open ? 1 : 0, x: open ? 0 : -8 }}
@@ -238,6 +244,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   return (
     <RailContext.Provider value={open}>
       <BottomNav pathname={pathname} />
+      <SyncBanner />
 
       <motion.aside
         initial={{ width: open ? RAIL_OPEN : RAIL_CLOSED }}

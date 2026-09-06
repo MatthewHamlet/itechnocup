@@ -17,7 +17,7 @@ const GREETING_MASK =
 export default async function FaradHome() {
   const { userId, profile } = await getAppData(PLAN_DATE_ISO);
 
-  if (userId && profile && !profile.onboarded_at) {
+  if (userId && !profile?.onboarded_at) {
     redirect("/app/rumah?onboarding=1");
   }
 

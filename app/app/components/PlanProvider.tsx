@@ -50,6 +50,8 @@ type PlanValue = {
   totalKwh: number;
   breakdown: { activity: Activity; kwh: number; share: number }[];
   moves: Move[];
+  syncError: string | null;
+  clearSyncError: () => void;
   dragging: string | null;
   solving: boolean;
   setStart: (id: string, start: number) => void;
@@ -91,6 +93,7 @@ export default function PlanProvider({
   const [moves, setMoves] = useState<Move[]>([]);
   const [dragging, setDragging] = useState<string | null>(null);
   const [solving, setSolving] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
 
   const updateHousehold = useCallback(
     async (value: HouseholdCapacity) => {
@@ -105,36 +108,52 @@ export default function PlanProvider({
 
   const setStart = useCallback(
     (id: string, start: number) => {
-      let next = start;
+      const target = activities.find((activity) => activity.id === id);
+      if (!target) return;
+
+      const next = clampStart(target, start);
       setActivities((prev) =>
-        prev.map((activity) => {
-          if (activity.id !== id) return activity;
-          next = clampStart(activity, start);
-          return { ...activity, start: next };
-        }),
+        prev.map((activity) => (activity.id === id ? { ...activity, start: next } : activity)),
       );
       setMoves([]);
-      if (persist) void moveActivityAction(id, next);
+
+      if (!persist) return;
+      void moveActivityAction(id, next).then((ok) => {
+        if (!ok) setSyncError("Geseran terakhir belum tersimpan. Muat ulang halaman untuk melihat data terbaru.");
+      });
     },
-    [persist],
+    [activities, persist],
   );
 
   const addActivity = useCallback(
     (activity: Activity) => {
       setActivities((prev) => [...prev, activity]);
       setMoves([]);
-      if (persist && planDate) void addActivityAction(planDate, activityToRow(activity));
+
+      if (!persist || !planDate) return;
+      void addActivityAction(planDate, activityToRow(activity)).then((ok) => {
+        if (ok) return;
+        setActivities((prev) => prev.filter((item) => item.id !== activity.id));
+        setSyncError(`${activity.label} gagal disimpan. Coba tambahkan lagi.`);
+      });
     },
     [persist, planDate],
   );
 
   const removeActivity = useCallback(
     (id: string) => {
+      const removed = activities.find((activity) => activity.id === id);
       setActivities((prev) => prev.filter((activity) => activity.id !== id));
       setMoves([]);
-      if (persist) void removeActivityAction(id);
+
+      if (!persist || !removed) return;
+      void removeActivityAction(id).then((ok) => {
+        if (ok) return;
+        setActivities((prev) => (prev.some((item) => item.id === id) ? prev : [...prev, removed]));
+        setSyncError(`${removed.label} gagal dihapus. Coba lagi.`);
+      });
     },
-    [persist],
+    [activities, persist],
   );
 
   const arrange = useCallback(() => {
@@ -168,7 +187,9 @@ export default function PlanProvider({
     if (persist) {
       void moveManyActivitiesAction(
         next.map((activity) => ({ id: activity.id, startMin: activity.start })),
-      );
+      ).then((ok) => {
+        if (!ok) setSyncError("Susunan baru belum tersimpan. Muat ulang halaman untuk melihat data terbaru.");
+      });
     }
     setMoves(
       next
@@ -183,6 +204,8 @@ export default function PlanProvider({
     setSolving(true);
     window.setTimeout(() => setSolving(false), 420);
   }, [activities, household, persist]);
+
+  const clearSyncError = useCallback(() => setSyncError(null), []);
 
   const reset = useCallback(() => {
     setActivities(initialActivities ? initialActivities.map(activityFromRow) : SEED);
@@ -213,6 +236,8 @@ export default function PlanProvider({
           share: totalKwh === 0 ? 0 : kwhOf(activity) / totalKwh,
         })),
       moves,
+      syncError,
+      clearSyncError,
       dragging,
       solving,
       setStart,
@@ -226,6 +251,8 @@ export default function PlanProvider({
     household,
     planningLimitVA,
     updateHousehold,
+    syncError,
+    clearSyncError,
     activities,
     moves,
     dragging,
