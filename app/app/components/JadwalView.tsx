@@ -5,8 +5,10 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import { Lock, Plus, Shuffle } from "@phosphor-icons/react";
 import Calendar, { dayKey } from "./Calendar";
+import MobileSchedule from "./MobileSchedule";
 import PageHeader, { PAGE_SHELL } from "./PageHeader";
 import { usePlan } from "./PlanProvider";
+import { tintOf } from "./schedule-colors";
 import {
   PLAN_DATE,
   dateLong,
@@ -16,25 +18,6 @@ import {
   timeLabel,
   type Activity,
 } from "./plan-model";
-
-/* one tint per corner of the house, so a glance at the list already says
-   whether the hour is kitchen, laundry or utility work */
-const TINT: Record<string, { bg: string; ink: string }> = {
-  masak: { bg: "bg-farad-ambersoft", ink: "text-farad-amber" },
-  "rice": { bg: "bg-farad-ambersoft", ink: "text-farad-amber" },
-  oven: { bg: "bg-farad-ambersoft", ink: "text-farad-amber" },
-  setrika: { bg: "bg-farad-sage", ink: "text-farad-forest" },
-  mesin: { bg: "bg-farad-sage", ink: "text-farad-forest" },
-  cuci: { bg: "bg-farad-sage", ink: "text-farad-forest" },
-  vacuum: { bg: "bg-farad-sage", ink: "text-farad-forest" },
-  pompa: { bg: "bg-chip-1", ink: "text-chip-2i" },
-  water: { bg: "bg-chip-1", ink: "text-chip-2i" },
-  ac: { bg: "bg-chip-1", ink: "text-chip-2i" },
-};
-const FALLBACK_TINT = { bg: "bg-farad-sandsoft", ink: "text-farad-sand" };
-
-const tintOf = (activity: Activity) =>
-  TINT[activity.id.split("-")[0]] ?? FALLBACK_TINT;
 
 export default function JadwalView() {
   const { activities, peak } = usePlan();
@@ -58,7 +41,9 @@ export default function JadwalView() {
   }, [activities, onPlanDay]);
 
   return (
-    <div className={PAGE_SHELL}>
+    <>
+      <MobileSchedule selected={selected} onSelect={setSelected} groups={groups} />
+      <div className={`hidden md:block ${PAGE_SHELL}`}>
       <PageHeader
         eyebrow="Farad"
         title="Jadwal"
@@ -151,7 +136,8 @@ export default function JadwalView() {
           </div>
         </aside>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

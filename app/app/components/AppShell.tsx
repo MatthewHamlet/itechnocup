@@ -244,7 +244,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <Rail open={open} onToggle={() => setOpen((v) => !v)} pathname={pathname} />
       </motion.aside>
 
-      <div className="farad-app flex min-h-screen overflow-x-clip bg-app-canvas">
+      <div className={`farad-app flex overflow-x-clip bg-app-canvas ${pathname === "/app/planner" ? "h-dvh overflow-y-hidden md:h-auto md:min-h-screen md:overflow-y-visible" : "min-h-screen"}`}>
         <motion.div
           aria-hidden
           initial={{ width: open ? RAIL_OPEN : RAIL_CLOSED }}
