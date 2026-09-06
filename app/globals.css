@@ -1,11 +1,28 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Nohemi";
+  src: url("/fonts/nohemi/Nohemi-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Nohemi";
+  src: url("/fonts/nohemi/Nohemi-Medium.woff2") format("woff2");
+  font-weight: 500 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   --color-farad-primary: #477a68;
   --color-farad-forest: #285548;
   --color-farad-sage: #dcebe5;
 
   --color-farad-ivory: #faf9f5;
+  --color-farad-paper: #f6f3ee;
   --color-farad-border: #e3e8e5;
 
   --color-farad-ink: #1e2925;
@@ -23,6 +40,8 @@
   --color-farad-sandsoft: #f2eadb;
 
   --color-farad-volt: #f6c445;
+
+  --color-farad-sky: #a5cef8;
 
   --color-farad-over: #b5442f;
   --color-farad-oversoft: #fbe4de;
@@ -48,6 +67,8 @@
   --color-home-wood: #b98f62;
 
   --font-sans: var(--font-jakarta);
+  --font-nohemi: "Nohemi", var(--font-jakarta), "Segoe UI", Helvetica, sans-serif;
+  --font-satoshi: "Satoshi", var(--font-jakarta), "Segoe UI", Helvetica, sans-serif;
 }
 
 :root {
@@ -56,7 +77,7 @@
 
 @media (max-width: 767px) {
   :root {
-    --farad-bottom-nav: calc(4.625rem + env(safe-area-inset-bottom));
+    --farad-bottom-nav: calc(4.5rem + env(safe-area-inset-bottom));
   }
 }
 
@@ -197,6 +218,60 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+html:has(.farad-app),
+html:has(.farad-app) body {
+  background: var(--color-app-canvas);
+}
+
+.farad-app {
+  font-family: var(--font-satoshi);
+}
+
+@layer base {
+  .farad-app h1,
+  .farad-app h2,
+  .farad-app h3,
+  .farad-app .font-nohemi {
+    font-family: var(--font-nohemi);
+  }
+}
+
+.scrollbar-slim {
+  scrollbar-width: auto;
+  scrollbar-color: #d5d0c7 transparent;
+}
+
+.scrollbar-slim::-webkit-scrollbar {
+  width: 15px;
+  height: 15px;
+}
+
+.scrollbar-slim::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-slim::-webkit-scrollbar-thumb {
+  background-color: #d5d0c7;
+  border-radius: 9999px;
+  border: 4px solid transparent;
+  background-clip: content-box;
+}
+
+.scrollbar-slim::-webkit-scrollbar-thumb:hover {
+  background-color: #bdb6aa;
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 html {
