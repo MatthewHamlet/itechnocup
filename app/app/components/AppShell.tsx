@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
-import { CaretLineLeft, Lightning, User } from "@phosphor-icons/react";
+import { CaretLineLeft, User } from "@phosphor-icons/react";
 import {
   EASE,
   NAV,
@@ -16,6 +16,7 @@ import {
   isActive,
   type NavItem,
 } from "./nav";
+import FaradMark from "@/app/components/FaradMark";
 import BottomNav from "./BottomNav";
 import SyncBanner from "./SyncBanner";
 import { usePlan } from "./PlanProvider";
@@ -126,7 +127,7 @@ function Rail({
           className="flex items-center gap-2.5 text-farad-forest"
         >
           <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-farad-forest text-farad-volt">
-            <Lightning size={21} weight="fill" />
+            <FaradMark size={19} />
           </span>
           <motion.span
             animate={{ width: open ? "auto" : 0, opacity: open ? 1 : 0 }}

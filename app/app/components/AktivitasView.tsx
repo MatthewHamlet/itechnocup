@@ -21,10 +21,17 @@ export default function AktivitasView({ onboarding = false }: { onboarding?: boo
   const router = useRouter();
   const reduce = useReducedMotion();
 
+  const [finishError, setFinishError] = useState("");
+
   function finish() {
+    setFinishError("");
     startFinishing(async () => {
-      await finishOnboardingAction();
+      if (!(await finishOnboardingAction())) {
+        setFinishError("Belum bisa menyelesaikan. Coba lagi sebentar lagi.");
+        return;
+      }
       router.push("/app");
+      router.refresh();
     });
   }
 
@@ -46,15 +53,20 @@ export default function AktivitasView({ onboarding = false }: { onboarding?: boo
         }
         action={
           onboarding ? (
-            <button
-              type="button"
-              onClick={finish}
-              disabled={finishing || activities.length === 0}
-              className="farad-press inline-flex items-center gap-2 rounded-full bg-farad-forest px-5 py-3 text-[13.5px] font-bold text-white outline-none transition-colors hover:bg-app-ink focus-visible:ring-2 focus-visible:ring-farad-primary disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {finishing ? "Menyiapkan…" : "Selesai, lihat rencana"}
-              <ArrowRight size={15} weight="bold" aria-hidden />
-            </button>
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={finish}
+                disabled={finishing || activities.length === 0}
+                className="farad-press inline-flex items-center gap-2 rounded-full bg-farad-forest px-5 py-3 text-[13.5px] font-bold text-white outline-none transition-colors hover:bg-app-ink focus-visible:ring-2 focus-visible:ring-farad-primary disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {finishing ? "Menyiapkan…" : "Selesai, lihat rencana"}
+                <ArrowRight size={15} weight="bold" aria-hidden />
+              </button>
+              <p role="status" className="mt-2 max-w-[22ch] text-[11.5px] leading-4 text-app-muted">
+                {finishError || (activities.length === 0 ? "Tambahkan satu kegiatan dulu." : "Beranda terbuka setelah ini.")}
+              </p>
+            </div>
           ) : undefined
         }
       />

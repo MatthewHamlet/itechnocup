@@ -3,7 +3,8 @@
 import { useRef, useState, useTransition, type FormEvent, type KeyboardEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowUpRight, Camera, Check, ChevronRight, Cloud, Database, House, Info, Laptop, Palette, Pencil, ShieldCheck, UserRound, Zap } from "lucide-react";
+import { ArrowUpRight, Camera, Check, ChevronRight, Cloud, Database, House, Info, Laptop, Palette, Pencil, ShieldCheck, UserRound } from "lucide-react";
+import FaradMark from "@/app/components/FaradMark";
 import PageHeader, { PAGE_SHELL } from "./PageHeader";
 import { savePreferences, useAccount, usePreferences } from "./AppPreferences";
 import { compressImage, type CompressedImage } from "./compress-image";
@@ -67,7 +68,7 @@ export default function SettingsView({ email = null }: { email?: string | null }
               </button>;
             })}
           </div>
-          <div className={styles.railFooter}><Zap size={15} aria-hidden /><span>Farad</span></div>
+          <div className={styles.railFooter}><FaradMark size={15} /><span>Farad</span></div>
         </aside>
         <section id="settings-panel" role="tabpanel" aria-labelledby={`settings-tab-${selected}`} tabIndex={0} className={styles.panel}>
           <div className={styles.panelHeader}><span className={styles.icon} data-tone={section.tone}><Icon size={23} aria-hidden /></span><div><h2>{section.title}</h2><p>{section.description}</p></div></div>
@@ -218,7 +219,7 @@ function DataPanel({ email }: { email: string | null }) {
 
 function AboutPanel() {
   return <div className={styles.body}>
-    <div className={styles.aboutBrand}><span><Zap size={28} fill="currentColor" aria-hidden /></span><div><h3>Farad</h3><p>Ruang untuk setiap kegiatan.</p></div></div>
+    <div className={styles.aboutBrand}><span><FaradMark size={26} /></span><div><h3>Farad</h3><p>Ruang untuk setiap kegiatan.</p></div></div>
     <p className={styles.aboutCopy}>Farad membantu kamu merencanakan kegiatan yang memakai listrik, melihat jam yang padat, dan mengatur giliran sesuai kapasitas rumah.</p>
     <div className={styles.rows}><SettingRow title="Perencanaan dari rumahmu" description="Perhitungan memakai daya alat, durasi, dan pengaturan rumah yang kamu isi; bukan pembacaan meter listrik langsung." /></div>
     <Link href="/app" className={styles.inlineLink}>Lihat rencana di Home <ArrowUpRight size={17} aria-hidden /></Link>
