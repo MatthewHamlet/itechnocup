@@ -62,7 +62,7 @@ export default function EstimasiEnergiCard({
       </div>
 
       <p className="relative border-t border-app-line px-6 py-4 text-[12px] leading-5 text-app-muted sm:px-7">
-        Atur Giliran memindahkan waktu, bukan memangkas pemakaian — total kWh-nya
+        Atur Giliran memindahkan waktu, bukan memangkas pemakaian. Total kWh-nya
         tetap sama.
       </p>
     </section>

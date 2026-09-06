@@ -47,7 +47,7 @@ export default function Footer() {
 
             <p className="mt-6 max-w-xs text-sm leading-7 text-white/65">
               Perencana aktivitas listrik rumah. Menata giliran pemakaian supaya
-              beban tidak menumpuk di jam yang sama — memakai kapasitas yang
+              beban tidak menumpuk di jam yang sama, memakai kapasitas yang
               sudah ada, tanpa perangkat tambahan.
             </p>
 

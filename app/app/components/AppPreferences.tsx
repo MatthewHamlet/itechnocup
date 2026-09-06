@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useSyncExternalStore, type ReactNode } from "react";
+import { createContext, useContext, useMemo, useSyncExternalStore, type ReactNode } from "react";
 import { MotionConfig } from "motion/react";
 
 type Preferences = { name: string; reduceMotion: boolean; strongText: boolean };
@@ -42,16 +42,45 @@ export function savePreferences(changes: Partial<Preferences>) {
   } catch { return false; }
 }
 
+const AccountNameContext = createContext<string | null>(null);
+
+function storedName(raw: string | null): string | null {
+  try {
+    const value = raw ? JSON.parse(raw) : null;
+    const name = typeof value?.name === "string" ? value.name.trim() : "";
+    return name ? name : null;
+  } catch { return null; }
+}
+
 export function usePreferences() {
   const raw = useSyncExternalStore(subscribe, snapshot, () => null);
-  return useMemo(() => parse(raw), [raw]);
+  const accountName = useContext(AccountNameContext);
+  return useMemo(() => {
+    const preferences = parse(raw);
+    if (storedName(raw) || !accountName) return preferences;
+    return { ...preferences, name: accountName };
+  }, [raw, accountName]);
 }
 
 export function DisplayName() {
   return usePreferences().name;
 }
 
-export default function AppPreferences({ children }: { children: ReactNode }) {
+export default function AppPreferences({
+  children,
+  accountName = null,
+}: {
+  children: ReactNode;
+  accountName?: string | null;
+}) {
+  return (
+    <AccountNameContext.Provider value={accountName}>
+      <PreferenceShell>{children}</PreferenceShell>
+    </AccountNameContext.Provider>
+  );
+}
+
+function PreferenceShell({ children }: { children: ReactNode }) {
   const preferences = usePreferences();
   return (
     <MotionConfig reducedMotion={preferences.reduceMotion ? "always" : "user"}>

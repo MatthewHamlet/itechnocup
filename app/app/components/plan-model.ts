@@ -6,6 +6,7 @@ import {
   type Icon,
 } from "@phosphor-icons/react";
 import { calculatePlanningLimitVA, type ApplianceTask, type HouseholdCapacity } from "@/lib/farad";
+import { PLAN_DATE_ISO } from "@/lib/data/plan-date";
 
 export const HOUSEHOLD: HouseholdCapacity = {
   installedVA: 1300,
@@ -20,7 +21,7 @@ export const PLANNING_LIMIT_VA = Math.round(
 /* The whole plan is pinned to one evening. Everything that names it derives
    from this single Date so the weekday, the chips and the calendar strip can
    never drift apart. */
-export const PLAN_DATE = new Date(2026, 8, 3);
+export const PLAN_DATE = new Date(`${PLAN_DATE_ISO}T00:00:00`);
 
 export const DAY_SHORT = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 const DAY_LONG = [
@@ -108,6 +109,7 @@ export type Activity = {
   label: string;
   short: string;
   appliance: string;
+  iconKey: string;
   icon: Icon;
   va: number;
   watts: number;
@@ -121,6 +123,7 @@ export type Activity = {
 export const SEED: Activity[] = [
   {
     id: "masak",
+    iconKey: "rice-cooker",
     label: "Masak nasi",
     short: "Masak",
     appliance: "Rice cooker",
@@ -135,6 +138,7 @@ export const SEED: Activity[] = [
   },
   {
     id: "setrika",
+    iconKey: "setrika",
     label: "Setrika",
     short: "Setrika",
     appliance: "Setrika",
@@ -149,6 +153,7 @@ export const SEED: Activity[] = [
   },
   {
     id: "cuci",
+    iconKey: "mesin-cuci",
     label: "Mesin cuci",
     short: "Mesin cuci",
     appliance: "Mesin cuci",
@@ -163,6 +168,7 @@ export const SEED: Activity[] = [
   },
   {
     id: "pompa",
+    iconKey: "pompa",
     label: "Pompa air",
     short: "Pompa",
     appliance: "Pompa air",
@@ -286,11 +292,13 @@ import {
   Desktop,
   Fan,
   Oven,
+  Plugs,
   Snowflake,
   Television,
   Thermometer,
   Wind,
 } from "@phosphor-icons/react";
+import type { ActivityRow } from "@/lib/data/types";
 
 export type CatalogItem = {
   key: string;
@@ -430,8 +438,6 @@ export const CATALOG: CatalogItem[] = [
   },
 ];
 
-let serial = 0;
-
 /* Aktivitas baru selalu dapat id unik supaya boleh menambah alat yang sama
    dua kali (mis. dua kali setrika di jam berbeda). */
 export function makeActivity(
@@ -439,17 +445,17 @@ export function makeActivity(
   start: number,
   flexibility: Flexibility = item.flexibility,
 ): Activity {
-  serial += 1;
   const safeStart = Math.min(
     Math.max(snap(start), WINDOW_START),
     WINDOW_END - item.duration,
   );
 
   return {
-    id: `${item.key}-${Date.now().toString(36)}-${serial}`,
+    id: crypto.randomUUID(),
     label: item.label,
     short: item.label.split(" ")[0],
     appliance: item.appliance,
+    iconKey: item.key,
     icon: item.icon,
     va: item.va,
     watts: item.watts,
@@ -458,5 +464,44 @@ export function makeActivity(
     earliest: WINDOW_START,
     latest: WINDOW_END,
     flexibility,
+  };
+}
+
+export const ICON_BY_KEY: Record<string, Icon> = Object.fromEntries(
+  CATALOG.map((item) => [item.key, item.icon]),
+);
+
+export function activityFromRow(row: ActivityRow): Activity {
+  return {
+    id: row.id,
+    label: row.label,
+    short: row.short_label,
+    appliance: row.appliance,
+    iconKey: row.icon_key,
+    icon: ICON_BY_KEY[row.icon_key] ?? Plugs,
+    va: row.va,
+    watts: row.watts,
+    duration: row.duration_min,
+    start: row.start_min,
+    earliest: row.earliest_min,
+    latest: row.latest_min,
+    flexibility: row.flexibility,
+  };
+}
+
+export function activityToRow(activity: Activity): ActivityRow {
+  return {
+    id: activity.id,
+    label: activity.label,
+    short_label: activity.short,
+    appliance: activity.appliance,
+    icon_key: activity.iconKey,
+    va: activity.va,
+    watts: activity.watts,
+    duration_min: activity.duration,
+    start_min: activity.start,
+    earliest_min: activity.earliest,
+    latest_min: activity.latest,
+    flexibility: activity.flexibility,
   };
 }

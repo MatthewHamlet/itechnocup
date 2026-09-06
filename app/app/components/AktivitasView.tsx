@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { CaretRight, Check, ClockCounterClockwise, X } from "@phosphor-icons/react";
+import { ArrowRight, CaretRight, Check, ClockCounterClockwise, X } from "@phosphor-icons/react";
+import { finishOnboardingAction } from "../actions";
 import ActivityHistory from "./ActivityHistory";
 import AddActivitySheet from "./AddActivitySheet";
 import Mascot from "./Mascot";
@@ -10,12 +12,21 @@ import PageHeader, { PAGE_SHELL } from "./PageHeader";
 import ScrollFade from "./ScrollFade";
 import { usePlan } from "./PlanProvider";
 
-export default function AktivitasView() {
+export default function AktivitasView({ onboarding = false }: { onboarding?: boolean }) {
   const { activities } = usePlan();
   const [addOpen, setAddOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [added, setAdded] = useState<string | null>(null);
+  const [finishing, startFinishing] = useTransition();
+  const router = useRouter();
   const reduce = useReducedMotion();
+
+  function finish() {
+    startFinishing(async () => {
+      await finishOnboardingAction();
+      router.push("/app");
+    });
+  }
 
   /* newest addition first — activities are appended as they are added */
   const history = [...activities].reverse();
@@ -26,9 +37,26 @@ export default function AktivitasView() {
     >
       <PageHeader
         tone="peach"
-        eyebrow="Farad"
+        eyebrow={onboarding ? "Langkah 2 dari 2" : "Farad"}
         title="Aktivitas"
-        subtitle="Catat alat yang mau dipakai, dan Farad mengatur gilirannya untukmu."
+        subtitle={
+          onboarding
+            ? "Tambahkan alat yang biasa kamu pakai malam ini. Nanti Farad yang mengatur gilirannya."
+            : "Catat alat yang mau dipakai, dan Farad mengatur gilirannya untukmu."
+        }
+        action={
+          onboarding ? (
+            <button
+              type="button"
+              onClick={finish}
+              disabled={finishing || activities.length === 0}
+              className="farad-press inline-flex items-center gap-2 rounded-full bg-farad-forest px-5 py-3 text-[13.5px] font-bold text-white outline-none transition-colors hover:bg-app-ink focus-visible:ring-2 focus-visible:ring-farad-primary disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {finishing ? "Menyiapkan…" : "Selesai, lihat rencana"}
+              <ArrowRight size={15} weight="bold" aria-hidden />
+            </button>
+          ) : undefined
+        }
       />
 
       <div className="grid min-h-0 flex-1 items-stretch gap-6 lg:flex-none lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-8 xl:grid-cols-[minmax(0,1fr)_380px] xl:gap-10">

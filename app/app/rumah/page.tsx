@@ -3,6 +3,11 @@ import RumahView from "../components/RumahView";
 
 export const metadata: Metadata = { title: "Rumah Saya · Farad" };
 
-export default function Page() {
-  return <RumahView />;
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ onboarding?: string }>;
+}) {
+  const { onboarding } = await searchParams;
+  return <RumahView onboarding={onboarding === "1"} />;
 }

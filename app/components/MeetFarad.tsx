@@ -21,7 +21,7 @@ const points = [
   {
     icon: Check,
     title: "Bilang kalau sudah muat",
-    copy: "Kalau malam ini aman, dia diam saja — tidak menceramahi.",
+    copy: "Kalau malam ini aman, dia diam saja, tidak menceramahi.",
   },
 ];
 

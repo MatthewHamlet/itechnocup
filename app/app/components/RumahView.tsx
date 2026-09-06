@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useTransition, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { calculatePlanningLimitVA } from "@/lib/farad";
 import Image from "next/image";
-import { Check, HouseLine, Info, Lightning, Plug, ShieldCheck, SlidersHorizontal } from "@phosphor-icons/react";
+import { ArrowRight, Check, HouseLine, Info, Lightning, Plug, ShieldCheck, SlidersHorizontal } from "@phosphor-icons/react";
 import PageHeader, { PAGE_SHELL } from "./PageHeader";
 import { usePlan } from "./PlanProvider";
 import { formatVA } from "./plan-model";
@@ -12,13 +13,15 @@ import { validHousehold } from "./household-settings";
 import styles from "./RumahView.module.css";
 const CAPACITIES = [450, 900, 1300, 2200, 3500, 5500];
 
-export default function RumahView() {
+export default function RumahView({ onboarding = false }: { onboarding?: boolean }) {
   const { household } = usePlan();
-  return <HouseholdForm key={`${household.installedVA}-${household.baseLoadVA}-${household.reserveFraction}`} />;
+  return <HouseholdForm onboarding={onboarding} key={`${household.installedVA}-${household.baseLoadVA}-${household.reserveFraction}`} />;
 }
 
-function HouseholdForm() {
+function HouseholdForm({ onboarding }: { onboarding: boolean }) {
   const { household, updateHousehold, planningLimitVA } = usePlan();
+  const router = useRouter();
+  const [saving, startSaving] = useTransition();
   const [capacity, setCapacity] = useState(household.installedVA);
   const [base, setBase] = useState(String(household.baseLoadVA));
   const [reservePercent, setReservePercent] = useState(Math.round(household.reserveFraction * 100));
@@ -44,9 +47,14 @@ function HouseholdForm() {
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!valid) return;
-    if (!updateHousehold(draft)) {
-      setMessage("Belum bisa menyimpan. Pastikan penyimpanan browser diizinkan, lalu coba lagi.");
-    }
+    startSaving(async () => {
+      if (!(await updateHousehold(draft))) {
+        setMessage("Belum bisa menyimpan. Coba lagi sebentar lagi.");
+        return;
+      }
+      setMessage("");
+      if (onboarding) router.push("/app/aktivitas?onboarding=1");
+    });
   }
 
   function cancel() {
@@ -58,7 +66,11 @@ function HouseholdForm() {
 
   return (
     <div className={PAGE_SHELL}>
-      <PageHeader eyebrow="Farad" title="Rumah Saya" subtitle="Rumah yang kamu kenal. Rencana yang lebih pas." />
+      <PageHeader
+        eyebrow={onboarding ? "Langkah 1 dari 2" : "Farad"}
+        title="Rumah Saya"
+        subtitle={onboarding ? "Isi dulu daya rumahmu, supaya Farad tahu ruang yang tersedia." : "Rumah yang kamu kenal. Rencana yang lebih pas."}
+      />
       <div className={styles.grid}>
         <div className={styles.overview}>
           <section aria-label="Profil listrik rumah" className={styles.hero}>
@@ -148,9 +160,12 @@ function HouseholdForm() {
             <div className={styles.limit}><div><p className={styles.limitLabel}>Batas rencana</p><p className={styles.limitHint}>Daya terpasang − cadangan</p></div><p className={styles.limitValue}>{formatVA(limit)}<span>VA</span></p></div>
             <div className={styles.actions}>
               {dirty && <button type="button" onClick={cancel} className={styles.cancel}>Batalkan</button>}
-              <button type="submit" disabled={!dirty || !valid} className={styles.save}><Check size={17} weight="bold" aria-hidden />{dirty ? "Simpan" : "Simpan perubahan"}</button>
+              <button type="submit" disabled={saving || (!onboarding && !dirty) || !valid} className={styles.save}>
+                {onboarding ? <ArrowRight size={17} weight="bold" aria-hidden /> : <Check size={17} weight="bold" aria-hidden />}
+                {saving ? "Menyimpan…" : onboarding ? "Simpan & lanjut" : dirty ? "Simpan" : "Simpan perubahan"}
+              </button>
             </div>
-            <p role="status" aria-live="polite" className={`${styles.saveStatus}${message ? ` ${styles.error}` : ""}`}>{message || "Perubahan diterapkan setelah kamu simpan."}</p>
+            <p role="status" aria-live="polite" className={`${styles.saveStatus}${message ? ` ${styles.error}` : ""}`}>{message || (onboarding ? "Bisa diubah lagi kapan saja dari halaman ini." : "Perubahan diterapkan setelah kamu simpan.")}</p>
           </div>
         </form>
       </div>

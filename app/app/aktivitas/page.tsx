@@ -7,6 +7,11 @@ export const metadata: Metadata = {
     "Catat alat rumah yang mau dipakai malam ini, lalu Farad mengatur gilirannya.",
 };
 
-export default function Page() {
-  return <AktivitasView />;
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ onboarding?: string }>;
+}) {
+  const { onboarding } = await searchParams;
+  return <AktivitasView onboarding={onboarding === "1"} />;
 }

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import AppShell from "./components/AppShell";
 import PlanProvider from "./components/PlanProvider";
 import AppPreferences from "./components/AppPreferences";
+import { getAppData } from "@/lib/data/queries";
+import { PLAN_DATE_ISO } from "@/lib/data/plan-date";
 
 export const metadata: Metadata = {
   title: "Farad",
@@ -9,14 +11,25 @@ export const metadata: Metadata = {
     "Rencanakan kegiatan rumah yang memakai listrik, lihat jam yang padat, dan atur gilirannya.",
 };
 
-export default function FaradAppLayout({
+export default async function FaradAppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { userId, profile, household, activities } = await getAppData(PLAN_DATE_ISO);
+
   return (
-    <AppPreferences>
-      <PlanProvider>
+    <AppPreferences accountName={profile?.display_name ?? null}>
+      <PlanProvider
+        household={{
+          installedVA: household.installed_va,
+          baseLoadVA: household.base_load_va,
+          reserveFraction: Number(household.reserve_fraction),
+        }}
+        initialActivities={userId ? activities : undefined}
+        planDate={PLAN_DATE_ISO}
+        persist={userId !== null}
+      >
         <AppShell>{children}</AppShell>
       </PlanProvider>
     </AppPreferences>

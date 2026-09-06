@@ -9,9 +9,19 @@ import {
   type ReactNode,
 } from "react";
 import { calculatePlanningLimitVA, scheduleTasks, type HouseholdCapacity } from "@/lib/farad";
+import type { ActivityRow } from "@/lib/data/types";
+import {
+  addActivityAction,
+  moveActivityAction,
+  moveManyActivitiesAction,
+  removeActivityAction,
+  saveHouseholdAction,
+} from "../actions";
 import { saveHousehold, useHouseholdSettings } from "./household-settings";
 import {
   SEED,
+  activityFromRow,
+  activityToRow,
   bandsAbove,
   clampStart,
   kwhOf,
@@ -30,7 +40,7 @@ type Move = { id: string; from: number; to: number };
 type PlanValue = {
   household: HouseholdCapacity;
   planningLimitVA: number;
-  updateHousehold: (value: HouseholdCapacity) => boolean;
+  updateHousehold: (value: HouseholdCapacity) => Promise<boolean>;
   activities: Activity[];
   slots: Slot[];
   peak: number;
@@ -61,44 +71,71 @@ export function usePlan() {
 export default function PlanProvider({
   children,
   household: pinned,
+  initialActivities,
+  planDate,
+  persist = false,
 }: {
   children: ReactNode;
   household?: HouseholdCapacity;
+  initialActivities?: ActivityRow[];
+  planDate?: string;
+  persist?: boolean;
 }) {
   const stored = useHouseholdSettings();
-  const household = pinned ?? stored;
+  const [saved, setSaved] = useState<HouseholdCapacity | null>(null);
+  const household = saved ?? pinned ?? stored;
   const planningLimitVA = calculatePlanningLimitVA(household);
-  const [activities, setActivities] = useState<Activity[]>(SEED);
+  const [activities, setActivities] = useState<Activity[]>(() =>
+    initialActivities ? initialActivities.map(activityFromRow) : SEED,
+  );
   const [moves, setMoves] = useState<Move[]>([]);
   const [dragging, setDragging] = useState<string | null>(null);
   const [solving, setSolving] = useState(false);
 
-  const updateHousehold = useCallback((value: HouseholdCapacity) => {
-    const saved = saveHousehold(value);
-    if (saved) setMoves([]);
-    return saved;
-  }, []);
+  const updateHousehold = useCallback(
+    async (value: HouseholdCapacity) => {
+      const ok = persist ? await saveHouseholdAction(value) : saveHousehold(value);
+      if (!ok) return false;
+      if (persist) setSaved(value);
+      setMoves([]);
+      return true;
+    },
+    [persist],
+  );
 
-  const setStart = useCallback((id: string, start: number) => {
-    setActivities((prev) =>
-      prev.map((activity) =>
-        activity.id === id
-          ? { ...activity, start: clampStart(activity, start) }
-          : activity,
-      ),
-    );
-    setMoves([]);
-  }, []);
+  const setStart = useCallback(
+    (id: string, start: number) => {
+      let next = start;
+      setActivities((prev) =>
+        prev.map((activity) => {
+          if (activity.id !== id) return activity;
+          next = clampStart(activity, start);
+          return { ...activity, start: next };
+        }),
+      );
+      setMoves([]);
+      if (persist) void moveActivityAction(id, next);
+    },
+    [persist],
+  );
 
-  const addActivity = useCallback((activity: Activity) => {
-    setActivities((prev) => [...prev, activity]);
-    setMoves([]);
-  }, []);
+  const addActivity = useCallback(
+    (activity: Activity) => {
+      setActivities((prev) => [...prev, activity]);
+      setMoves([]);
+      if (persist && planDate) void addActivityAction(planDate, activityToRow(activity));
+    },
+    [persist, planDate],
+  );
 
-  const removeActivity = useCallback((id: string) => {
-    setActivities((prev) => prev.filter((activity) => activity.id !== id));
-    setMoves([]);
-  }, []);
+  const removeActivity = useCallback(
+    (id: string) => {
+      setActivities((prev) => prev.filter((activity) => activity.id !== id));
+      setMoves([]);
+      if (persist) void removeActivityAction(id);
+    },
+    [persist],
+  );
 
   const arrange = useCallback(() => {
     let result;
@@ -128,6 +165,11 @@ export default function PlanProvider({
     }));
 
     setActivities(next);
+    if (persist) {
+      void moveManyActivitiesAction(
+        next.map((activity) => ({ id: activity.id, startMin: activity.start })),
+      );
+    }
     setMoves(
       next
         .map((activity, index) => ({
@@ -140,12 +182,12 @@ export default function PlanProvider({
 
     setSolving(true);
     window.setTimeout(() => setSolving(false), 420);
-  }, [activities, household]);
+  }, [activities, household, persist]);
 
   const reset = useCallback(() => {
-    setActivities(SEED);
+    setActivities(initialActivities ? initialActivities.map(activityFromRow) : SEED);
     setMoves([]);
-  }, []);
+  }, [initialActivities]);
 
   const value = useMemo<PlanValue>(() => {
     const slots = loadProfile(activities, household);

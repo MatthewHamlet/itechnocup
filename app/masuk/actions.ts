@@ -87,8 +87,6 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
   redirect(next);
 }
 
-/* Supabase tetap mengembalikan URL authorize walau providernya mati, jadi tanpa
-   pengecekan ini pengguna mendarat di halaman JSON error milik Supabase. */
 async function googleEnabled(): Promise<boolean> {
   try {
     const response = await fetch(`${SUPABASE_URL}/auth/v1/settings`, {

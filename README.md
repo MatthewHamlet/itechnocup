@@ -35,6 +35,46 @@ Tanpa langkah ini aplikasi tetap jalan: `/app` terbuka bebas dan tombol masuk me
 
 Setelah tersambung, `/app` hanya bisa dibuka setelah masuk; pengunjung yang belum masuk dialihkan ke `/masuk?next=...`. Tombol keluar ada di Pengaturan → Data di perangkat.
 
+## Scan alat dari foto
+
+Halaman Aktivitas → Tambah → **Foto** memakai Gemini untuk mengenali alat listrik di foto
+dan membaca stiker dayanya. Ambil kunci gratis di [aistudio.google.com/apikey](https://aistudio.google.com/apikey),
+lalu tambahkan di `.env.local`:
+
+```
+GEMINI_API_KEY=AIza...
+```
+
+Kuncinya khusus server, jangan diberi awalan `NEXT_PUBLIC_`. Fotonya dikecilkan di browser
+(maksimal 1024px, JPEG) sebelum dikirim ke server action, lalu diteruskan ke Gemini.
+Tanpa kunci ini, tombol fotonya tetap ada tapi memberi pesan bahwa scan belum aktif.
+
+Modelnya dicoba berurutan `gemini-3.6-flash` → `gemini-3.5-flash` → `gemini-3.1-flash-lite`,
+jadi kalau satu model kena batas kuota gratis, yang berikutnya dipakai. Kalau semuanya kena
+batas, panelnya bilang kuota harian habis.
+
+Di Vercel, tambahkan `GEMINI_API_KEY` sebagai environment variable juga.
+
+## Deploy ke Vercel
+
+1. Vercel → Project Settings → Environment Variables, isi untuk **Production**, **Preview**, dan **Development**:
+
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...
+   ```
+
+2. Supabase → Authentication → URL Configuration:
+   - **Site URL**: `https://<nama-proyek>.vercel.app`
+   - **Redirect URLs**: `http://localhost:3000/**`, `https://<nama-proyek>.vercel.app/**`, dan
+     `https://<nama-proyek>-*-<akun-vercel>.vercel.app/**` untuk deployment preview.
+3. Google Cloud Console tidak perlu diubah. Authorized redirect URI-nya tetap satu,
+   yaitu `https://<project-ref>.supabase.co/auth/v1/callback`, karena Google selalu
+   kembali ke Supabase dulu, bukan ke domain aplikasi.
+
+Jangan pakai `https://*.vercel.app/**` di daftar redirect: pola itu mengizinkan aplikasi
+Vercel milik siapa pun menerima kode login pengguna.
+
 ### Peta file autentikasi
 
 | File | Isi |

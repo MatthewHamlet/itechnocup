@@ -41,7 +41,7 @@ export default function Problem() {
               <SectionHeading
                 eyebrow="Masalahnya"
                 title="Banyak kegiatan rumah. Satu kapasitas listrik."
-                lead="Masak nasi, setrika, mesin cuci, dan pompa air bisa saja dibutuhkan di waktu yang berdekatan. Masalahnya bukan selalu kekurangan listrik — kadang bebannya hanya terlalu menumpuk pada jam yang sama."
+                lead="Masak nasi, setrika, mesin cuci, dan pompa air bisa saja dibutuhkan di waktu yang berdekatan. Masalahnya bukan selalu kekurangan listrik, kadang bebannya hanya terlalu menumpuk pada jam yang sama."
               />
             </Reveal>
 

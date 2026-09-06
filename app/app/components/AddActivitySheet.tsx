@@ -22,6 +22,7 @@ import {
   type Flexibility,
 } from "./plan-model";
 import Modal from "./Modal";
+import ScanPhotoPanel from "./ScanPhotoPanel";
 import { usePlan } from "./PlanProvider";
 
 const DEFAULT_START = 19 * 60;
@@ -170,10 +171,8 @@ export default function AddActivitySheet({
 
         {mode === "photo" && (
           <div>
-            <p className="rounded-2xl border border-dashed border-app-line px-5 py-8 text-center text-[13.5px] leading-6 text-app-muted">
-              Pembacaan daya dari foto belum tersambung. Sementara ini
-              pilih alatnya dari daftar, atau tulis sendiri.
-            </p>
+            <ScanPhotoPanel onUse={choose} />
+
             <button
               type="button"
               onClick={() => setMode("catalog")}

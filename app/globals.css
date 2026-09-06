@@ -17,16 +17,16 @@
 }
 
 @theme {
-  --color-farad-primary: #477a68;
-  --color-farad-forest: #285548;
-  --color-farad-sage: #dcebe5;
+  --color-farad-primary: #527da1;
+  --color-farad-forest: #375f82;
+  --color-farad-sage: #dce8f2;
 
-  --color-farad-ivory: #faf9f5;
-  --color-farad-paper: #f6f3ee;
-  --color-farad-border: #e3e8e5;
+  --color-farad-ivory: #f7f9fb;
+  --color-farad-paper: #f0f4f8;
+  --color-farad-border: #dce3eb;
 
-  --color-farad-ink: #1e2925;
-  --color-farad-muted: #66736d;
+  --color-farad-ink: #253649;
+  --color-farad-muted: #607184;
 
   --color-farad-peach: #e8a27c;
   --color-farad-peachsoft: #f8e5da;
