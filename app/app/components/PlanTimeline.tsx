@@ -16,6 +16,12 @@ import {
 
 const MIN_HOURS = 5;
 const TILE_MIN_PX = 132;
+const ROW_PX = 52;
+const ROW_GAP_PX = 10;
+const TRACK_PAD_PX = 40;
+const VISIBLE_ROWS = 4;
+const TRACK_HEIGHT =
+  VISIBLE_ROWS * ROW_PX + (VISIBLE_ROWS - 1) * ROW_GAP_PX + TRACK_PAD_PX;
 
 const TONES = {
   light: { bg: "#e8eff7", ink: "#43607d", ring: "#d5e3f0" },
@@ -230,7 +236,10 @@ export default function PlanTimeline({ className = "" }: { className?: string })
             );
           })}
 
-          <ul className="relative space-y-2.5 py-5">
+          <ul
+            className="scrollbar-none relative space-y-2.5 overflow-y-auto overflow-x-hidden py-5"
+            style={{ height: TRACK_HEIGHT }}
+          >
             {activities.map((activity) => {
               const Icon = activity.icon;
               const overHouse = overlaps(activity, houseBands);

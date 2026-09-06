@@ -15,6 +15,12 @@ import {
 } from "./plan-model";
 
 const SPAN = 240;
+const ROW_PX = 44;
+const ROW_GAP_PX = 8;
+const TRACK_PAD_PX = 24;
+const VISIBLE_ROWS = 4;
+const TRACK_HEIGHT =
+  VISIBLE_ROWS * ROW_PX + (VISIBLE_ROWS - 1) * ROW_GAP_PX + TRACK_PAD_PX;
 const STEP = 60;
 const TOTAL_MIN = WINDOW_END - WINDOW_START;
 const TOTAL_HOURS = TOTAL_MIN / 60;
@@ -162,7 +168,10 @@ export default function TonightSnapshot() {
             />
           ))}
 
-          <ul className="relative space-y-2 py-3">
+          <ul
+            className="scrollbar-none relative space-y-2 overflow-y-auto overflow-x-hidden py-3"
+            style={{ height: TRACK_HEIGHT }}
+          >
             {activities.map((activity) => {
               const Icon = activity.icon;
               const overHouse = overlaps(activity, houseBands);

@@ -7,6 +7,36 @@ import type { ActivityRow } from "@/lib/data/types";
 
 const AVATAR_MEDIA = ["image/jpeg", "image/png", "image/webp"];
 
+async function markOnboarded(id: string) {
+  const supabase = await createClient();
+  const stamp = new Date().toISOString();
+
+  const { data: existing } = await supabase
+    .from("profiles")
+    .select("id,onboarded_at")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!existing) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const metaName = String(user?.user_metadata?.full_name ?? "").trim();
+    const { error } = await supabase
+      .from("profiles")
+      .insert({ id, display_name: metaName || "Teman Farad", onboarded_at: stamp });
+    return !error;
+  }
+
+  if (existing.onboarded_at) return true;
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ onboarded_at: stamp })
+    .eq("id", id);
+  return !error;
+}
+
 async function userId(): Promise<string | null> {
   if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
@@ -56,6 +86,8 @@ export async function addActivityAction(
   });
 
   if (error) return false;
+
+  await markOnboarded(id);
 
   revalidatePath("/app", "layout");
   return true;
@@ -119,23 +151,7 @@ export async function finishOnboardingAction(): Promise<boolean> {
   const id = await userId();
   if (!id) return false;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const metaName = String(user?.user_metadata?.full_name ?? "").trim();
-
-  const { error } = await supabase.from("profiles").upsert(
-    {
-      id,
-      display_name: metaName || "Teman Farad",
-      onboarded_at: new Date().toISOString(),
-    },
-    { onConflict: "id", ignoreDuplicates: false },
-  );
-
-  if (error) return false;
+  if (!(await markOnboarded(id))) return false;
 
   revalidatePath("/app", "layout");
   return true;
