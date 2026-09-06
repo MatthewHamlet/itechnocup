@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import AppShell from "./components/AppShell";
 import PlanProvider from "./components/PlanProvider";
+import AppPreferences from "./components/AppPreferences";
 
 export const metadata: Metadata = {
   title: "Farad",
@@ -14,7 +15,7 @@ export default function FaradAppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <AppPreferences>
       <link rel="preconnect" href="https://api.fontshare.com" />
       <link rel="preconnect" href="https://cdn.fontshare.com" crossOrigin="" />
       <link
@@ -24,6 +25,6 @@ export default function FaradAppLayout({
       <PlanProvider>
         <AppShell>{children}</AppShell>
       </PlanProvider>
-    </>
+    </AppPreferences>
   );
 }

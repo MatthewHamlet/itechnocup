@@ -6,6 +6,7 @@ import SaranFaradCard from "./components/SaranFaradCard";
 import KapasitasRumahCard from "./components/KapasitasRumahCard";
 import EstimasiEnergiCard from "./components/EstimasiEnergiCard";
 import KegiatanCarousel from "./components/KegiatanCarousel";
+import { DisplayName } from "./components/AppPreferences";
 
 const GREETING_MASK =
   "linear-gradient(to bottom, #000 0%, #000 52%, transparent 88%), linear-gradient(to right, transparent 0%, #000 8%, #000 74%, transparent 99%)";
@@ -36,7 +37,7 @@ export default function FaradHome() {
 
               <div className="relative">
                 <h1 className="font-nohemi text-[32px] font-bold leading-[1.1] tracking-tight text-app-ink xl:text-[38px]">
-                  Selamat pagi, Isabella&nbsp;<span aria-hidden>👋</span>
+                  Selamat pagi, <DisplayName />&nbsp;<span aria-hidden>👋</span>
                 </h1>
               </div>
             </header>

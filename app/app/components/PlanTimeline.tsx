@@ -6,7 +6,6 @@ import { Lightning, PushPin, Warning, LightbulbFilament } from "@phosphor-icons/
 import { usePlan } from "./PlanProvider";
 import {
   PLAN_DATE_SHORT,
-  PLANNING_LIMIT_VA,
   WINDOW_END,
   WINDOW_START,
   formatVA,
@@ -61,6 +60,7 @@ function useTrackWidth() {
 
 export default function PlanTimeline({ className = "" }: { className?: string }) {
   const {
+    planningLimitVA: PLANNING_LIMIT_VA,
     activities,
     peak,
     planBands,

@@ -8,10 +8,9 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { scheduleTasks } from "@/lib/farad";
+import { calculatePlanningLimitVA, scheduleTasks, type HouseholdCapacity } from "@/lib/farad";
+import { saveHousehold, useHouseholdSettings } from "./household-settings";
 import {
-  HOUSEHOLD,
-  PLANNING_LIMIT_VA,
   SEED,
   bandsAbove,
   clampStart,
@@ -29,6 +28,9 @@ import {
 type Move = { id: string; from: number; to: number };
 
 type PlanValue = {
+  household: HouseholdCapacity;
+  planningLimitVA: number;
+  updateHousehold: (value: HouseholdCapacity) => boolean;
   activities: Activity[];
   slots: Slot[];
   peak: number;
@@ -57,10 +59,18 @@ export function usePlan() {
 }
 
 export default function PlanProvider({ children }: { children: ReactNode }) {
+  const household = useHouseholdSettings();
+  const planningLimitVA = calculatePlanningLimitVA(household);
   const [activities, setActivities] = useState<Activity[]>(SEED);
   const [moves, setMoves] = useState<Move[]>([]);
   const [dragging, setDragging] = useState<string | null>(null);
   const [solving, setSolving] = useState(false);
+
+  const updateHousehold = useCallback((value: HouseholdCapacity) => {
+    const saved = saveHousehold(value);
+    if (saved) setMoves([]);
+    return saved;
+  }, []);
 
   const setStart = useCallback((id: string, start: number) => {
     setActivities((prev) =>
@@ -86,7 +96,7 @@ export default function PlanProvider({ children }: { children: ReactNode }) {
   const arrange = useCallback(() => {
     let result;
     try {
-      result = scheduleTasks(HOUSEHOLD, activities.map(toTask), {
+      result = scheduleTasks(household, activities.map(toTask), {
         slotMinutes: 15,
       });
     } catch {
@@ -123,7 +133,7 @@ export default function PlanProvider({ children }: { children: ReactNode }) {
 
     setSolving(true);
     window.setTimeout(() => setSolving(false), 420);
-  }, [activities]);
+  }, [activities, household]);
 
   const reset = useCallback(() => {
     setActivities(SEED);
@@ -131,17 +141,20 @@ export default function PlanProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<PlanValue>(() => {
-    const slots = loadProfile(activities);
+    const slots = loadProfile(activities, household);
     const peak = peakOf(slots);
     const totalKwh = activities.reduce((sum, a) => sum + kwhOf(a), 0);
 
     return {
+      household,
+      planningLimitVA,
+      updateHousehold,
       activities,
       slots,
       peak,
-      severity: severityOf(peak),
-      planBands: bandsAbove(slots, PLANNING_LIMIT_VA),
-      houseBands: bandsAbove(slots, HOUSEHOLD.installedVA),
+      severity: severityOf(peak, household),
+      planBands: bandsAbove(slots, planningLimitVA),
+      houseBands: bandsAbove(slots, household.installedVA),
       totalKwh,
       breakdown: [...activities]
         .sort((a, b) => kwhOf(b) - kwhOf(a))
@@ -161,6 +174,9 @@ export default function PlanProvider({ children }: { children: ReactNode }) {
       reset,
     };
   }, [
+    household,
+    planningLimitVA,
+    updateHousehold,
     activities,
     moves,
     dragging,

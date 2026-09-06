@@ -8,11 +8,13 @@ import TonightSnapshot from "./TonightSnapshot";
 import UpcomingRail from "./UpcomingRail";
 import EnergyStrip from "./EnergyStrip";
 import { usePlan } from "./PlanProvider";
+import { usePreferences } from "./AppPreferences";
 
 const SCENE_MASK =
   "linear-gradient(to bottom, #000 0%, #000 58%, transparent 100%), linear-gradient(to right, transparent 0%, #000 14%, #000 82%, transparent 100%)";
 
-export default function MobileHome({ name = "Isabella" }: { name?: string }) {
+export default function MobileHome() {
+  const { name } = usePreferences();
   const { activities } = usePlan();
 
   return (

@@ -5,7 +5,7 @@ import {
   WashingMachine,
   type Icon,
 } from "@phosphor-icons/react";
-import type { ApplianceTask, HouseholdCapacity } from "@/lib/farad";
+import { calculatePlanningLimitVA, type ApplianceTask, type HouseholdCapacity } from "@/lib/farad";
 
 export const HOUSEHOLD: HouseholdCapacity = {
   installedVA: 1300,
@@ -206,7 +206,7 @@ export type Slot = {
   active: string[];
 };
 
-export function loadProfile(activities: Activity[]): Slot[] {
+export function loadProfile(activities: Activity[], household: HouseholdCapacity = HOUSEHOLD): Slot[] {
   const slots: Slot[] = [];
   for (let start = WINDOW_START; start < WINDOW_END; start += SLOT_MIN) {
     const active = activities.filter(
@@ -214,7 +214,7 @@ export function loadProfile(activities: Activity[]): Slot[] {
     );
     slots.push({
       start,
-      va: HOUSEHOLD.baseLoadVA + active.reduce((sum, a) => sum + a.va, 0),
+      va: household.baseLoadVA + active.reduce((sum, a) => sum + a.va, 0),
       active: active.map((a) => a.id),
     });
   }
@@ -250,9 +250,9 @@ export const kwhOf = (activity: Activity) =>
 
 export type Severity = "ok" | "over-plan" | "over-house";
 
-export function severityOf(peak: number): Severity {
-  if (peak > HOUSEHOLD.installedVA) return "over-house";
-  if (peak > PLANNING_LIMIT_VA) return "over-plan";
+export function severityOf(peak: number, household: HouseholdCapacity = HOUSEHOLD): Severity {
+  if (peak > household.installedVA) return "over-house";
+  if (peak > calculatePlanningLimitVA(household)) return "over-plan";
   return "ok";
 }
 
@@ -272,7 +272,7 @@ export function toTask(activity: Activity): ApplianceTask {
 }
 
 export const formatVA = (value: number) =>
-  Math.round(value).toLocaleString("id-ID");
+  value.toLocaleString("id-ID", { maximumFractionDigits: 1 });
 
 export const formatKwh = (value: number) =>
   value.toLocaleString("id-ID", {

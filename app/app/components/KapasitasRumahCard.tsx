@@ -4,7 +4,7 @@ import { Gauge } from "@phosphor-icons/react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
 import { usePlan } from "./PlanProvider";
-import { HOUSEHOLD, PLANNING_LIMIT_VA, formatVA } from "./plan-model";
+import { formatVA } from "./plan-model";
 
 const USAGE_TONE = {
   ok: "bg-farad-forest",
@@ -17,7 +17,7 @@ export default function KapasitasRumahCard({
 }: {
   className?: string;
 }) {
-  const { peak, severity } = usePlan();
+  const { peak, severity, household: HOUSEHOLD, planningLimitVA: PLANNING_LIMIT_VA } = usePlan();
   const reduceMotion = useReducedMotion();
 
   const reserve = HOUSEHOLD.installedVA - PLANNING_LIMIT_VA;

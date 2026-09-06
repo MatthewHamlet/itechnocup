@@ -1,12 +1,8 @@
-import { Lightning } from "@phosphor-icons/react/dist/ssr";
-import PagePlaceholder from "../components/PagePlaceholder";
+import type { Metadata } from "next";
+import RumahView from "../components/RumahView";
+
+export const metadata: Metadata = { title: "Rumah Saya · Farad" };
 
 export default function Page() {
-  return (
-    <PagePlaceholder
-      icon={Lightning}
-      title="Rumah Saya"
-      body="Kapasitas terpasang, beban dasar, dan cadangan yang dipakai Farad saat menyusun rencana."
-    />
-  );
+  return <RumahView />;
 }

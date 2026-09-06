@@ -25,6 +25,7 @@ export default function AktivitasView() {
       className={`flex min-h-[calc(100svh-var(--farad-bottom-nav))] flex-col lg:block lg:min-h-0 ${PAGE_SHELL}`}
     >
       <PageHeader
+        tone="peach"
         eyebrow="Farad"
         title="Aktivitas"
         subtitle="Catat alat yang mau dipakai, dan Farad mengatur gilirannya untukmu."

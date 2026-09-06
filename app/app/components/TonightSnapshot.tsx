@@ -7,7 +7,6 @@ import { usePlan } from "./PlanProvider";
 import ActivitySheet from "./ActivitySheet";
 import {
   PLAN_DATE_SHORT,
-  PLANNING_LIMIT_VA,
   WINDOW_END,
   WINDOW_START,
   formatVA,
@@ -44,7 +43,7 @@ function toneFor(va: number, overPlan: boolean, overHouse: boolean) {
 }
 
 export default function TonightSnapshot() {
-  const { activities, peak, severity, planBands, houseBands, arrange } = usePlan();
+  const { activities, peak, severity, planBands, houseBands, arrange, planningLimitVA: PLANNING_LIMIT_VA } = usePlan();
   const reduce = useReducedMotion();
   const [viewStart, setViewStart] = useState<number | null>(null);
   const [open, setOpen] = useState<Activity | null>(null);

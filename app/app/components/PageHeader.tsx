@@ -4,6 +4,30 @@ import type { ReactNode } from "react";
    layar, sudut bawah membulat, dengan lingkaran samar di kanan. */
 
 const TONE = {
+  blue: {
+    wash: "linear-gradient(115deg, #d4e5f4 0%, #c1d9ed 62%, #e1edf5 100%)",
+    ink: "text-[#253d55]",
+    sub: "text-[#48627a]",
+    eyebrow: "text-[#526e89]",
+  },
+  lavender: {
+    wash: "linear-gradient(115deg, #e1e1f1 0%, #d4d9ec 65%, #ecebf5 100%)",
+    ink: "text-[#3e4568]",
+    sub: "text-[#5d6483]",
+    eyebrow: "text-[#696e8f]",
+  },
+  peach: {
+    wash: "linear-gradient(115deg, #f3e3d6 0%, #edd9c7 65%, #f8eee5 100%)",
+    ink: "text-[#624a3d]",
+    sub: "text-[#786153]",
+    eyebrow: "text-[#876c5a]",
+  },
+  ice: {
+    wash: "linear-gradient(115deg, #d7e8e9 0%, #c8dfe3 65%, #e7eff0 100%)",
+    ink: "text-[#31525d]",
+    sub: "text-[#4d6b74]",
+    eyebrow: "text-[#587b83]",
+  },
   forest: {
     wash: "#285548",
     ink: "text-white",
@@ -34,7 +58,7 @@ export const PAGE_SHELL =
   "w-full px-4 pb-6 pt-6 sm:px-6 md:px-8 md:pt-10 lg:pb-10 xl:px-12 xl:pb-12 xl:pt-12";
 
 export default function PageHeader({
-  tone = "forest",
+  tone = "blue",
   eyebrow,
   title,
   subtitle,
@@ -53,7 +77,7 @@ export default function PageHeader({
   return (
     <header
       className={`relative mb-6 overflow-hidden rounded-b-[32px] pb-7 sm:mb-8 sm:rounded-b-[44px] sm:pb-10 xl:mb-10 xl:pb-12 ${BLEED}`}
-      style={{ backgroundColor: t.wash }}
+      style={{ background: t.wash }}
     >
       <svg
         aria-hidden

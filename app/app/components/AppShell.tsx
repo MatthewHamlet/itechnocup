@@ -17,6 +17,9 @@ import {
   type NavItem,
 } from "./nav";
 import BottomNav from "./BottomNav";
+import { usePlan } from "./PlanProvider";
+import { formatVA } from "./plan-model";
+import { DisplayName } from "./AppPreferences";
 
 const RailContext = createContext(true);
 
@@ -107,6 +110,7 @@ function Rail({
   onToggle: () => void;
   pathname: string;
 }) {
+  const { household } = usePlan();
   const reduce = useReducedMotion();
   const size = reduce ? { duration: 0 } : RAIL_SPRING;
   const fade = reduce ? { duration: 0 } : { duration: 0.2, ease: EASE };
@@ -175,10 +179,10 @@ function Rail({
           >
             <span className="ml-3.5 block">
               <span className="block truncate text-[15px] font-bold leading-5 text-app-ink">
-                Isabella
+                <DisplayName />
               </span>
               <span className="block truncate text-[12.5px] leading-4 text-app-muted">
-                R-1 / 1.300 VA
+                {formatVA(household.installedVA)} VA terpasang
               </span>
             </span>
           </motion.span>

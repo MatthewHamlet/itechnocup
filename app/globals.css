@@ -229,6 +229,43 @@ html:has(.farad-app) body {
   font-family: var(--font-satoshi);
 }
 
+.farad-theme {
+  color: var(--color-app-ink);
+  --color-farad-primary: #527da1;
+  --color-farad-forest: #375f82;
+  --color-farad-sage: #dce8f2;
+  --color-farad-border: #dce3eb;
+  --color-farad-ink: #253649;
+  --color-farad-muted: #607184;
+  --color-app-canvas: #f0f2f5;
+  --color-app-line: #dfe4eb;
+  --color-app-line-soft: #edf0f4;
+  --color-app-ink: #243449;
+  --color-app-muted: #617085;
+  --color-app-dim: #7d8a9b;
+  --color-farad-ivory: #f7f9fb;
+  --color-farad-paper: #f0f4f8;
+}
+
+.farad-theme[data-strong-text="true"] {
+  --color-app-muted: #3d5065;
+  --color-app-dim: #506278;
+  --color-farad-muted: #3d5065;
+}
+
+.farad-theme[data-strong-text="true"] :is(p, label, dt, dd) {
+  font-weight: 500;
+}
+
+.farad-theme[data-reduce-motion="true"] *,
+.farad-theme[data-reduce-motion="true"] *::before,
+.farad-theme[data-reduce-motion="true"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
 @layer base {
   .farad-app h1,
   .farad-app h2,

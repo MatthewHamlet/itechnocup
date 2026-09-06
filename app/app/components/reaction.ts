@@ -1,7 +1,6 @@
 import type { Mood } from "./Mascot";
+import type { HouseholdCapacity } from "@/lib/farad";
 import {
-  HOUSEHOLD,
-  PLANNING_LIMIT_VA,
   formatVA,
   timeLabel,
   type Activity,
@@ -16,6 +15,8 @@ export type Reaction = {
 };
 
 export function reactionFor({
+  household: HOUSEHOLD,
+  planningLimitVA: PLANNING_LIMIT_VA,
   severity,
   peak,
   planBands,
@@ -23,6 +24,8 @@ export function reactionFor({
   moves,
   activities,
 }: {
+  household: HouseholdCapacity;
+  planningLimitVA: number;
   severity: Severity;
   peak: number;
   planBands: Band[];

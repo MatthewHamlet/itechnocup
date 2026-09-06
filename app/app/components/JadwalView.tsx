@@ -45,6 +45,7 @@ export default function JadwalView() {
       <MobileSchedule selected={selected} onSelect={setSelected} groups={groups} />
       <div className={`hidden md:block ${PAGE_SHELL}`}>
       <PageHeader
+        tone="lavender"
         eyebrow="Farad"
         title="Jadwal"
         subtitle="Lihat urutan kegiatan rumah per jam, dan jam mana yang paling padat."
