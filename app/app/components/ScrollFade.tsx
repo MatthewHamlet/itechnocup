@@ -2,9 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
-/* Scroll column whose clipped edge softens into the canvas instead of cutting
-   content off mid-line. The fade only appears on the side that actually has
-   more content, so nothing is dimmed while the column sits at either end. */
 export default function ScrollFade({
   className = "",
   fade = 34,

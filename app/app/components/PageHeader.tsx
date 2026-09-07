@@ -1,8 +1,5 @@
 import type { ReactNode } from "react";
 
-/* Header halaman bergaya karsa-app: satu blok warna yang melebar sampai tepi
-   layar, sudut bawah membulat, dengan lingkaran samar di kanan. */
-
 const TONE = {
   blue: {
     wash: "linear-gradient(115deg, #d4e5f4 0%, #c1d9ed 62%, #e1edf5 100%)",
@@ -50,7 +47,6 @@ const TONE = {
 
 export type HeaderTone = keyof typeof TONE;
 
-/* harus persis membatalkan padding PAGE_SHELL di bawah */
 const BLEED =
   "-mx-4 -mt-6 px-4 pt-6 sm:-mx-6 sm:px-6 md:-mx-8 md:-mt-10 md:px-8 md:pt-10 xl:-mx-12 xl:-mt-12 xl:px-12 xl:pt-12";
 

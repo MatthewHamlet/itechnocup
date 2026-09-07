@@ -13,8 +13,6 @@ const MOOD: Record<string, Mood> = {
   "over-house": "alert",
 };
 
-/* which home corner sits behind the advice — keyed by the appliance Farad is
-   talking about, so a new activity only needs a line here plus a scene */
 const SCENE_BY_ACTIVITY: Record<string, SceneKind> = {
   setrika: "laundry",
   cuci: "laundry",
@@ -22,7 +20,6 @@ const SCENE_BY_ACTIVITY: Record<string, SceneKind> = {
   pompa: "water",
 };
 
-/* keeps the household scene off the text column without a visible divider */
 const SCENE_FADE =
   "linear-gradient(105deg, transparent 6%, rgba(0,0,0,0.22) 34%, rgba(0,0,0,0.7) 58%, #000 78%)";
 
@@ -44,7 +41,6 @@ export default function SaranFaradCard({ className = "" }: { className?: string 
       activity.start + activity.duration > band.start,
   );
 
-  /* "Setrika & mesin cuci" — only the first name keeps its capital */
   const pretty = flexible.map((activity, index) =>
     index === 0 ? activity.label : activity.label.toLowerCase(),
   );
@@ -82,12 +78,9 @@ export default function SaranFaradCard({ className = "" }: { className?: string 
 
   return (
     <section
-      /* tall enough that Estimasi Energi always starts below the rail's fold:
-         Kapasitas Rumah plus the two gaps take 406px below it; the rest is buffer */
       style={{ minHeight: "var(--farad-advice-min-h, max(300px, calc(100dvh - 438px)))" }}
       className={`relative flex flex-col overflow-hidden rounded-[30px] bg-farad-paper shadow-[0_1px_2px_rgba(24,32,24,0.03),0_24px_48px_-36px_rgba(24,32,24,0.3)] ring-1 ring-[#e8e3d9] ${className}`}
     >
-      {/* background — faded home corner, cropped by the card edges */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
@@ -96,14 +89,12 @@ export default function SaranFaradCard({ className = "" }: { className?: string 
         <AdviceScene scene={scene} />
       </div>
 
-      {/* midground — soft daylight falling in from the window */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{ background: WARM_WASH }}
       />
 
-      {/* foreground */}
       <div className="relative z-10 flex flex-1 flex-col px-7 pt-7 xl:px-8 xl:pt-8">
         <p className="font-satoshi flex items-center gap-2 text-[12px] font-bold uppercase leading-4 tracking-[0.2em] text-app-dim">
           <Lightning size={14} weight="fill" className="text-[#c9a44c]" />

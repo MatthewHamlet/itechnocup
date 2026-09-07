@@ -6,7 +6,7 @@ import {
   type Icon,
 } from "@phosphor-icons/react";
 import { calculatePlanningLimitVA, type ApplianceTask, type HouseholdCapacity } from "@/lib/farad";
-import { PLAN_DATE_ISO } from "@/lib/data/plan-date";
+import { planDateISO } from "@/lib/data/plan-date";
 
 export const HOUSEHOLD: HouseholdCapacity = {
   installedVA: 1300,
@@ -18,10 +18,7 @@ export const PLANNING_LIMIT_VA = Math.round(
   HOUSEHOLD.installedVA * (1 - HOUSEHOLD.reserveFraction),
 );
 
-/* The whole plan is pinned to one evening. Everything that names it derives
-   from this single Date so the weekday, the chips and the calendar strip can
-   never drift apart. */
-export const PLAN_DATE = new Date(`${PLAN_DATE_ISO}T00:00:00`);
+export const PLAN_DATE = new Date(`${planDateISO()}T00:00:00`);
 
 export const DAY_SHORT = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 const DAY_LONG = [
@@ -76,7 +73,6 @@ export const sameDay = (a: Date, b: Date) =>
   a.getMonth() === b.getMonth() &&
   a.getDate() === b.getDate();
 
-/* Sunday-first week containing `date`, matching the Sun..Sat strip */
 export function weekOf(date: Date) {
   const start = new Date(date);
   start.setDate(date.getDate() - date.getDay());
@@ -286,8 +282,6 @@ export const formatKwh = (value: number) =>
     maximumFractionDigits: 2,
   });
 
-/* ── Menambah aktivitas ─────────────────────────────────────────────────── */
-
 import {
   Desktop,
   Fan,
@@ -312,8 +306,6 @@ export type CatalogItem = {
   note: string;
 };
 
-/* Angka daya di sini pakai rata-rata alat rumah tangga di Indonesia — cukup
-   untuk merencanakan giliran, bukan untuk tagihan. */
 export const CATALOG: CatalogItem[] = [
   {
     key: "rice-cooker",
@@ -438,8 +430,6 @@ export const CATALOG: CatalogItem[] = [
   },
 ];
 
-/* Aktivitas baru selalu dapat id unik supaya boleh menambah alat yang sama
-   dua kali (mis. dua kali setrika di jam berbeda). */
 export function makeActivity(
   item: CatalogItem,
   start: number,

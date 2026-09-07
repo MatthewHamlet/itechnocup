@@ -29,7 +29,6 @@ export default function AktivitasView({ onboarding = false }: { onboarding?: boo
     });
   }
 
-  /* newest addition first — activities are appended as they are added */
   const history = [...activities].reverse();
 
   return (
@@ -37,7 +36,6 @@ export default function AktivitasView({ onboarding = false }: { onboarding?: boo
       className={`flex min-h-[calc(100svh-var(--farad-bottom-nav))] flex-col lg:block lg:min-h-0 ${PAGE_SHELL}`}
     >
       <PageHeader
-        tone="peach"
         eyebrow={onboarding ? "Langkah 2 dari 2" : "Farad"}
         title="Aktivitas"
         subtitle={
@@ -79,7 +77,6 @@ export default function AktivitasView({ onboarding = false }: { onboarding?: boo
               className="pointer-events-none absolute -right-16 -top-20 size-56 rounded-full bg-farad-primary/10 blur-3xl"
             />
 
-            {/* same as karsa's scan panel: default expression, same sizes */}
             <Mascot className="relative h-32 w-32 transition-transform duration-300 group-hover/add:-translate-y-1 sm:h-36 sm:w-36 lg:h-52 lg:w-52 xl:h-60 xl:w-60" />
 
             <span className="font-nohemi relative mt-5 block text-[22px] font-bold tracking-tight text-app-ink sm:text-[24px] lg:mt-7 lg:text-[34px] xl:text-[38px]">
@@ -115,9 +112,6 @@ export default function AktivitasView({ onboarding = false }: { onboarding?: boo
           </button>
         </div>
 
-        {/* The list is taken out of flow so it never adds to the grid row: the
-            add panel alone sets the height, and the two columns end on the same
-            line no matter how long the history gets. Overflow fades out. */}
         <aside className="hidden min-w-0 lg:flex lg:flex-col">
           <h2 className="font-nohemi mb-3 shrink-0 text-[19px] font-bold tracking-tight text-app-ink xl:text-[22px]">
             Riwayat penambahan

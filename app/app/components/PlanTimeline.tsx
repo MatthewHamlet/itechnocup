@@ -39,9 +39,6 @@ function toneFor(va: number, overPlan: boolean, overHouse: boolean) {
   return TONES.light;
 }
 
-/* the tile floor is expressed in px but applied as a percentage, so the track
-   width has to be known before paint — otherwise short tiles render at their
-   true narrow width for one frame and then snap wider */
 function useTrackWidth() {
   const ref = useRef<HTMLDivElement | null>(null);
   const [width, setWidth] = useState(0);

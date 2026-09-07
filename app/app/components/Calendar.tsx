@@ -6,9 +6,6 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { EASE, PILL_SPRING } from "./nav";
 import { MONTH_LONG, sameDay } from "./plan-model";
 
-/* karsa-app's caregiver calendar, ported to Farad's tokens: full month grid,
-   month arrows, a sliding pill on the selected day and a dot on days that
-   already hold a plan. Monday-first, like the original. */
 const WEEKDAYS = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
 
 export const dayKey = (date: Date) =>

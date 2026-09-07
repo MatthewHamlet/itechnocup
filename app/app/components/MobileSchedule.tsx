@@ -34,7 +34,6 @@ export default function MobileSchedule({ selected, onSelect, groups }: Props) {
   return (
     <div className="flex h-[calc(100dvh-var(--farad-bottom-nav))] flex-col overflow-hidden bg-app-canvas px-4 pt-6 text-app-ink sm:px-6 md:hidden [&>header]:shrink-0">
       <PageHeader
-        tone="lavender"
         eyebrow="Farad"
         title="Jadwal"
         subtitle="Lihat urutan kegiatan rumah per jam, dan jam mana yang paling padat."

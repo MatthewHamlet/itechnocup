@@ -27,7 +27,6 @@ export default function JadwalView() {
   const marked = useMemo(() => new Set([dayKey(PLAN_DATE)]), []);
   const onPlanDay = sameDay(selected, PLAN_DATE);
 
-  /* the plan only holds one evening, so any other date is genuinely empty */
   const groups = useMemo(() => {
     if (!onPlanDay) return [];
     const byStart = new Map<number, Activity[]>();
@@ -45,13 +44,11 @@ export default function JadwalView() {
       <MobileSchedule selected={selected} onSelect={setSelected} groups={groups} />
       <div className={`hidden md:block ${PAGE_SHELL}`}>
       <PageHeader
-        tone="lavender"
         eyebrow="Farad"
         title="Jadwal"
         subtitle="Lihat urutan kegiatan rumah per jam, dan jam mana yang paling padat."
       />
 
-      {/* list on the left, karsa's month calendar parked on the right */}
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-7 xl:grid-cols-[minmax(0,1fr)_380px] xl:gap-8">
         <div className="order-2 min-w-0 lg:order-1">
           {groups.length === 0 ? (

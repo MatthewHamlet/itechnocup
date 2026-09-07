@@ -3,7 +3,7 @@
 import { useRef, useState, useTransition, type FormEvent, type KeyboardEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowUpRight, Camera, Check, ChevronRight, Cloud, Database, House, Info, Laptop, Palette, Pencil, ShieldCheck, UserRound } from "lucide-react";
+import { ArrowUpRight, Camera, Check, ChevronRight, Database, House, Info, Palette, Pencil, ShieldCheck, UserRound } from "lucide-react";
 import FaradMark from "@/app/components/FaradMark";
 import PageHeader, { PAGE_SHELL } from "./PageHeader";
 import { savePreferences, useAccount, usePreferences } from "./AppPreferences";
@@ -164,13 +164,6 @@ function ProfileForm() {
       />
     </div>
 
-    <div className={styles.info}>
-      {signedIn ? <Cloud size={19} aria-hidden /> : <Laptop size={19} aria-hidden />}
-      <p>{signedIn
-        ? "Nama dan foto profil tersimpan di akun Farad-mu, jadi ikut ke perangkat lain."
-        : "Profil ini tersimpan di browser yang sedang kamu gunakan. Masuk untuk menyimpannya di akun."}</p>
-    </div>
-
     <div className={styles.actions}>
       <button type="submit" disabled={saving || !dirty || !draft.trim()} className={styles.save}>
         <Check size={17} aria-hidden />{saving ? "Menyimpan…" : dirty ? "Simpan perubahan" : "Profil tersimpan"}
@@ -178,7 +171,7 @@ function ProfileForm() {
       {dirty && !saving && <button type="button" className={styles.cancel} onClick={() => { setDraft(name); setPhoto(null); setError(""); }}>Batalkan</button>}
     </div>
 
-    <p role="status" className={styles.feedback}>{error || feedback || (dirty ? "Simpan untuk memperbarui profilmu." : "Profil sudah tersimpan.")}</p>
+    {(error || feedback) && <p role="status" className={styles.feedback}>{error || feedback}</p>}
   </form>;
 }
 

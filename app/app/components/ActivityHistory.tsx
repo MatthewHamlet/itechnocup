@@ -20,8 +20,7 @@ export default function ActivityHistory({
 }) {
   const { removeActivity } = usePlan();
   const [open, setOpen] = useState<Activity | null>(null);
-  /* the target outlives the dialog's closing fade, so its name does not blank
-     out mid-animation; `confirmOpen` is what actually drives the modal */
+
   const [pendingDelete, setPendingDelete] = useState<Activity | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const reduce = useReducedMotion();
@@ -41,8 +40,7 @@ export default function ActivityHistory({
           {activities.map((activity) => {
             const Icon = activity.icon;
             const fixed = activity.flexibility === "fixed";
-            /* most labels already name the appliance — only show it when it
-               actually adds something ("Masak nasi" → "Rice cooker") */
+
             const appliance =
               activity.appliance.toLowerCase() === activity.label.toLowerCase()
                 ? null

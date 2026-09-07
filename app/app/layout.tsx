@@ -3,7 +3,7 @@ import AppShell from "./components/AppShell";
 import PlanProvider from "./components/PlanProvider";
 import AppPreferences from "./components/AppPreferences";
 import { getAppData } from "@/lib/data/queries";
-import { PLAN_DATE_ISO } from "@/lib/data/plan-date";
+import { planDateISO } from "@/lib/data/plan-date";
 
 export const metadata: Metadata = {
   title: "Farad",
@@ -16,7 +16,7 @@ export default async function FaradAppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { userId, profile, household, activities } = await getAppData(PLAN_DATE_ISO);
+  const { userId, profile, household, activities } = await getAppData(planDateISO());
 
   return (
     <AppPreferences
@@ -31,7 +31,7 @@ export default async function FaradAppLayout({
           reserveFraction: Number(household.reserve_fraction),
         }}
         initialActivities={userId ? activities : undefined}
-        planDate={PLAN_DATE_ISO}
+        planDate={planDateISO()}
         persist={userId !== null}
       >
         <AppShell>{children}</AppShell>

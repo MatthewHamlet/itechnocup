@@ -10,8 +10,6 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useRailOpen } from "./AppShell";
 import { RAIL_CLOSED, RAIL_OPEN } from "./nav";
 
-/* below sm this is a bottom sheet, above it a centred dialog; only the sheet
-   can leave by sliding y:"100%", which is its own height */
 function useCompact() {
   const [compact, setCompact] = useState(false);
 
@@ -57,10 +55,6 @@ export default function Modal({
     };
   }, [open, onClose]);
 
-  /* One keyed child owns the exit, and it animates a real property. A wrapper
-     that animates nothing — or a panel whose exit sits deeper — leaves
-     AnimatePresence waiting: the fade finishes but the node is never
-     unmounted, which reads as a pause then a teleport. */
   return (
     <AnimatePresence>
       {open && (
@@ -76,8 +70,6 @@ export default function Modal({
               "--modal-w": width,
             } as CSSProperties
           }
-          /* the rail is fixed to the left edge, so centring on the viewport
-             leaves the panel visibly left of the content it belongs to */
           className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center sm:p-6 md:pl-[calc(var(--rail)+1.5rem)]"
         >
           <button

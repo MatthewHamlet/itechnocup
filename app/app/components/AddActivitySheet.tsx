@@ -27,7 +27,6 @@ import { usePlan } from "./PlanProvider";
 
 const DEFAULT_START = 19 * 60;
 
-/* karsa's SourcePicker row, with Farad's tokens */
 const ROW =
   "flex w-full items-center gap-3.5 rounded-2xl bg-white p-4 text-left outline-none ring-1 ring-app-line transition-colors duration-200 hover:bg-farad-sage/50 focus-visible:ring-2 focus-visible:ring-farad-primary/40 sm:gap-4 sm:p-5";
 
@@ -92,7 +91,6 @@ export default function AddActivitySheet({
   const [start, setStart] = useState(DEFAULT_START);
   const [flexibility, setFlexibility] = useState<Flexibility>("flexible");
 
-  /* start fresh every time the sheet opens */
   useEffect(() => {
     if (open) return;
     const id = window.setTimeout(() => {
@@ -115,7 +113,6 @@ export default function AddActivitySheet({
     if (mode === "detail") setMode(picked?.key === "custom" ? "custom" : "catalog");
     else setMode("source");
   };
-
 
   const submit = () => {
     if (!picked) return;

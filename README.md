@@ -44,6 +44,7 @@ Jalankan berurutan di Supabase → SQL Editor (semuanya idempotent, aman diulang
 | `supabase/schema.sql` | Tabel `profiles`, `households`, `activities`, RLS, trigger pendaftaran |
 | `supabase/002-onboarding.sql` | Kolom `profiles.onboarded_at` |
 | `supabase/003-profile.sql` | Kolom `profiles.avatar_url` dan bucket Storage `avatars` beserta policy-nya |
+| `supabase/004-komunitas.sql` | Tabel komunitas (grup, anggota, postingan, komentar, vote, follow, pesan grup), view `community_feed`, RLS, kolom `profiles.headline`/`verified`, bucket Storage `community`, policy baca profil antar-pengguna, dan realtime chat grup |
 
 ## Scan alat dari foto
 

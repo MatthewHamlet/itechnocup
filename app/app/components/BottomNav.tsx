@@ -13,7 +13,7 @@ export default function BottomNav({ pathname }: { pathname: string }) {
       aria-label="Navigasi utama"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-app-line bg-white pb-[env(safe-area-inset-bottom)] md:hidden"
     >
-      <ul className="grid grid-cols-4">
+      <ul className="grid" style={{ gridTemplateColumns: `repeat(${NAV.length}, minmax(0, 1fr))` }}>
         {NAV.map((item) => {
           const Icon = item.icon;
           const active = isActive(pathname, item.href);
@@ -30,7 +30,7 @@ export default function BottomNav({ pathname }: { pathname: string }) {
                     layoutId="bottom-nav-pill"
                     transition={spring}
                     aria-hidden
-                    className="absolute inset-y-2 w-[68px] rounded-[20px] bg-farad-sage"
+                    className="absolute inset-y-2 inset-x-1.5 rounded-[20px] bg-farad-sage"
                   />
                 )}
 
@@ -42,7 +42,7 @@ export default function BottomNav({ pathname }: { pathname: string }) {
                   }`}
                 />
                 <span
-                  className={`relative text-[11.5px] leading-3 transition-colors duration-200 ${
+                  className={`relative truncate px-1 text-[11px] leading-3 transition-colors duration-200 ${
                     active ? "font-bold text-farad-forest" : "font-medium text-app-muted"
                   }`}
                 >

@@ -1,14 +1,9 @@
-/* Atmospheric household scene that sits behind Saran Farad.
-   Decorative only: one coherent home corner per advice topic, oversized and
-   cropped by the card edges. Keep every shape in the same muted tone — depth
-   comes from opacity, never from colour. */
+
 
 export type SceneKind = "laundry" | "kitchen" | "water" | "calm";
 
 const TONE = "#d8d3c8";
 
-/* window + sill + floor: the frame every corner shares, so switching topics
-   never changes the room, only what stands in it */
 function Room() {
   return (
     <g>
@@ -36,7 +31,7 @@ function Shelf() {
 function Laundry() {
   return (
     <g>
-      {/* washing machine, tucked under the window */}
+
       <rect x="304" y="264" width="206" height="188" rx="28" fillOpacity="0.6" />
       <rect x="328" y="288" width="158" height="15" rx="7.5" fillOpacity="0.4" />
       <circle cx="482" cy="295" r="9" fillOpacity="0.45" />
@@ -59,7 +54,6 @@ function Laundry() {
         strokeOpacity="0.34"
       />
 
-      {/* ironing board, running off the left edge */}
       <path
         d="M-40 312 L236 270 q20 -3 20 13 t-20 15 L-40 338 Z"
         fillOpacity="0.5"
@@ -79,7 +73,6 @@ function Laundry() {
         strokeOpacity="0.42"
       />
 
-      {/* iron resting on the board */}
       <path d="M112 262 q42 -26 88 -10 l10 18 q-48 8 -98 8 Z" fillOpacity="0.62" />
       <path
         d="M132 258 q22 -30 52 -14"
@@ -90,7 +83,6 @@ function Laundry() {
         strokeOpacity="0.5"
       />
 
-      {/* laundry basket */}
       <path d="M8 372 h150 l-16 80 h-118 Z" fillOpacity="0.45" />
       <rect x="-2" y="362" width="170" height="16" rx="8" fillOpacity="0.55" />
     </g>
@@ -105,13 +97,11 @@ function Kitchen() {
       <rect x="152" y="319" width="7" height="133" fillOpacity="0.38" />
       <rect x="118" y="356" width="60" height="8" rx="4" fillOpacity="0.45" />
 
-      {/* rice cooker on the counter */}
       <rect x="58" y="238" width="126" height="62" rx="24" fillOpacity="0.6" />
       <rect x="48" y="226" width="146" height="17" rx="8.5" fillOpacity="0.5" />
       <circle cx="121" cy="222" r="10" fillOpacity="0.5" />
       <circle cx="160" cy="272" r="11" fillOpacity="0.36" />
 
-      {/* kettle beside it, half cropped */}
       <path d="M226 258 h58 l10 42 h-78 Z" fillOpacity="0.5" />
       <rect x="234" y="248" width="42" height="12" rx="6" fillOpacity="0.55" />
 
@@ -124,7 +114,7 @@ function Kitchen() {
 function Water() {
   return (
     <g>
-      {/* tank on a low frame */}
+
       <rect x="316" y="182" width="188" height="184" rx="30" fillOpacity="0.55" />
       <rect x="336" y="206" width="148" height="8" rx="4" fillOpacity="0.32" />
       <path
@@ -135,7 +125,6 @@ function Water() {
         strokeOpacity="0.45"
       />
 
-      {/* pipe run into the corner */}
       <path
         d="M316 268 H188 q-22 0 -22 24 V452"
         fill="none"
@@ -146,7 +135,6 @@ function Water() {
       />
       <rect x="140" y="330" width="52" height="18" rx="9" fillOpacity="0.5" />
 
-      {/* bucket */}
       <path d="M10 366 h122 l-14 86 h-94 Z" fillOpacity="0.45" />
       <rect x="0" y="356" width="142" height="16" rx="8" fillOpacity="0.55" />
       <path
@@ -164,7 +152,7 @@ function Water() {
 function Calm() {
   return (
     <g>
-      {/* floor lamp leaning into the window light */}
+
       <path
         d="M404 300 V446"
         stroke={TONE}
@@ -175,7 +163,6 @@ function Calm() {
       <path d="M348 300 l24 -74 h64 l24 74 Z" fillOpacity="0.55" />
       <rect x="356" y="440" width="98" height="13" rx="6.5" fillOpacity="0.5" />
 
-      {/* plant in the corner */}
       <path d="M60 350 h116 l-16 102 h-84 Z" fillOpacity="0.48" />
       <rect x="48" y="338" width="140" height="17" rx="8.5" fillOpacity="0.58" />
       <path
@@ -187,7 +174,6 @@ function Calm() {
         strokeOpacity="0.4"
       />
 
-      {/* low bench, cropped left */}
       <rect x="-60" y="378" width="180" height="15" rx="7.5" fillOpacity="0.45" />
     </g>
   );

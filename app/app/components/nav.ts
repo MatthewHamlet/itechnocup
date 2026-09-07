@@ -4,6 +4,7 @@ import {
   House,
   ListChecks,
   Lightning,
+  UsersThree,
   type Icon,
 } from "@phosphor-icons/react";
 
@@ -14,6 +15,7 @@ export const NAV: NavItem[] = [
   { href: "/app/planner", label: "Jadwal", icon: CalendarDots },
   { href: "/app/aktivitas", label: "Aktivitas", icon: ListChecks },
   { href: "/app/rumah", label: "Rumah", icon: Lightning },
+  { href: "/app/komunitas", label: "Komunitas", icon: UsersThree },
 ];
 
 export const SETTINGS: NavItem = {

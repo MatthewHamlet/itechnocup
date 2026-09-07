@@ -9,13 +9,13 @@ import KegiatanCarousel from "./components/KegiatanCarousel";
 import { DisplayName } from "./components/AppPreferences";
 import { redirect } from "next/navigation";
 import { getAppData } from "@/lib/data/queries";
-import { PLAN_DATE_ISO } from "@/lib/data/plan-date";
+import { planDateISO } from "@/lib/data/plan-date";
 
 const GREETING_MASK =
   "linear-gradient(to bottom, #000 0%, #000 52%, transparent 88%), linear-gradient(to right, transparent 0%, #000 8%, #000 74%, transparent 99%)";
 
 export default async function FaradHome() {
-  const { userId, profile } = await getAppData(PLAN_DATE_ISO);
+  const { userId, profile } = await getAppData(planDateISO());
 
   if (userId && !profile?.onboarded_at) {
     redirect("/app/rumah?onboarding=1");

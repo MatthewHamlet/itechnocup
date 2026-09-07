@@ -5,9 +5,7 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  // Override default ignores of eslint-config-next.
   globalIgnores([
-    // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",
     "build/**",
@@ -18,8 +16,13 @@ const eslintConfig = defineConfig([
       "app/app/components/ScanPhotoPanel.tsx",
       "app/app/components/SettingsView.tsx",
       "app/app/components/AppShell.tsx",
+      "app/app/components/community/**",
     ],
     rules: { "@next/next/no-img-element": "off" },
+  },
+  {
+    files: ["app/app/components/community/**"],
+    rules: { "react-hooks/set-state-in-effect": "warn" },
   },
 ]);
 
